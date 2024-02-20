@@ -1,2 +1,4 @@
 ToDoList/venv/
 ToDoList/.idea/
+ToDoList/ToDoList/__pycache__/
+ToDoList/todolist/__pycache__/
