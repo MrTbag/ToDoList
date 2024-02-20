@@ -21,3 +21,7 @@ def index(request):
 def detail(request, list_id):
     li = get_object_or_404(List, pk=list_id)
     return render(request, 'todolist/detail.html', {'li': li})
+
+
+def do_task(request, list_id):
+    return HttpResponse("You are changing the status of list: %s." % list_id)

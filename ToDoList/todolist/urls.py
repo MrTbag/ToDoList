@@ -7,4 +7,5 @@ app_name = 'todolist'
 urlpatterns = [
     path('', views.index, name='index'),
     path('<int:list_id>/', views.detail, name='detail'),
+    path('<int:list_id>/do_task/', views.do_task, name='do_task'),
 ]
