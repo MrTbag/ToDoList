@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'todolist.apps.TodolistConfig',
-    "login.apps.LoginConfig"
 ]
 
 MIDDLEWARE = [

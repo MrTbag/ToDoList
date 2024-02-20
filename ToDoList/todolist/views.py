@@ -2,7 +2,7 @@ from unittest import loader
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from django.views import generic
 from .models import List
@@ -19,5 +19,5 @@ def index(request):
 
 
 def detail(request, list_id):
-    name = List.objects.get(id=list_id).name
-    return HttpResponse("You're at the todolist named %s." % name)
+    li = get_object_or_404(List, pk=list_id)
+    return render(request, 'todolist/detail.html', {'li': li})
