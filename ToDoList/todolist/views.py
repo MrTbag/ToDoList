@@ -13,12 +13,11 @@ from .models import List, Task
 
 # Create your views here.
 
-def index(request, deleted=False):
+def index(request):
     lists = List.objects.all()
     context = {
         'lists': lists,
-        'user': request.user.username,
-        'deleted': deleted
+        'user': request.user.username
     }
     return render(request, 'todolist/index.html', context)
 
@@ -26,6 +25,20 @@ def index(request, deleted=False):
 def list_detail(request, list_id):
     li = get_object_or_404(List, pk=list_id)
     return render(request, 'todolist/list_detail.html', {'li': li})
+
+
+def list_form(request):
+    return render(request, 'todolist/list_form.html')
+
+
+def list_create(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        pub_date = timezone.now()
+        new_list = List.objects.create(name=name, description=description, pub_date=pub_date)
+        new_list.save()
+        return redirect('todolist:index')
 
 
 def task_detail(request, task_id):
@@ -54,4 +67,4 @@ def task_create(request, list_id):
         task.save()
         parent_list = get_object_or_404(List, pk=list_id)
         parent_list.tasks.add(task)
-        return redirect('todolist:index')
+        return redirect('todolist:list_detail', list_id=list_id)

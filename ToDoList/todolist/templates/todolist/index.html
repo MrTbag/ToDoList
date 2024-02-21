@@ -9,6 +9,4 @@
     <p>No to-do lists are available.</p>
 {% endif %}
 
-{% if deleted %}
-     <p>Deleted the task successfully</p>
-{% endif %}
+<a href="{% url 'todolist:list_form' %}">Create a new to-do list</a>

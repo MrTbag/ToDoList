@@ -1,8 +1,9 @@
 <h1>{{ li }}</h1>
+<h3>Tasks: </h3>
  <ul>
     {% for task in li.tasks.all %}
         <li><a href="{% url 'todolist:task_detail' task.id %}">{{ task.name }}</a></li>
     {% endfor %}
-    <a href="{% url 'todolist:task_form'  li.id %}"> Create a new task!</a>
  </ul>
+<a href="{% url 'todolist:task_form'  li.id %}"> Create a new task!</a>
 
