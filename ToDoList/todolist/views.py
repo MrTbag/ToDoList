@@ -27,6 +27,13 @@ def list_detail(request, list_id):
     return render(request, 'todolist/list_detail.html', {'li': li})
 
 
+def list_delete(request, list_id):
+    del_list = get_object_or_404(List, pk=list_id)
+    name = del_list.name
+    del_list.delete()
+    return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
+
+
 def list_form(request):
     return render(request, 'todolist/list_form.html')
 
@@ -50,7 +57,7 @@ def task_delete(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
     name = task.name
     task.delete()
-    return render(request, 'todolist/delete_successful.html', {'task': name})
+    return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'task'})
 
 
 def task_form(request, list_id):
