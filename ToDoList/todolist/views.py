@@ -48,6 +48,13 @@ def list_create(request):
         return redirect('todolist:index')
 
 
+def list_edit(request, list_id):
+    tdl = List.objects.get(id=list_id)
+    name = tdl.name
+    description = tdl.description
+    return render(request, 'todolist/list_form.html', {'name': name, 'description': description})
+
+
 def task_detail(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
     return render(request, 'todolist/task_detail.html', {'task': task})
