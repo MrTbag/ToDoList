@@ -1,0 +1,14 @@
+<form action="{% url 'todolist:task_create' list_id %}" method="post">
+{% csrf_token %}
+<fieldset>
+    <legend><h1>Specify the details of the task to be created</h1></legend>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <label for="name">Name: </label><br>
+    <input type="text" name="name" id="name" value=""><br>
+    <label for="importance">Importance: </label><br>
+    <input type="number" name="importance" id="importance" value=""><br>
+    <label for="deadline">Deadline: </label><br>
+    <input type="date" name="deadline" id="deadline" value=""><br>
+</fieldset>
+<input type="submit" value="Submit">
+</form>
