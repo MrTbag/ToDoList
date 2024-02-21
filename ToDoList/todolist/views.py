@@ -1,3 +1,4 @@
+import time
 from unittest import loader
 
 from django.shortcuts import render
@@ -12,11 +13,12 @@ from .models import List, Task
 
 # Create your views here.
 
-def index(request):
+def index(request, deleted=False):
     lists = List.objects.all()
     context = {
         'lists': lists,
-        'user': request.user.username
+        'user': request.user.username,
+        'deleted': deleted
     }
     return render(request, 'todolist/index.html', context)
 
@@ -33,8 +35,9 @@ def task_detail(request, task_id):
 
 def task_delete(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
+    name = task.name
     task.delete()
-    return redirect('todolist:index', {'deleted': True})
+    return render(request, 'todolist/delete_successful.html', {'task': name})
 
 
 def task_form(request, list_id):
