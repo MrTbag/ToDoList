@@ -5,7 +5,7 @@
         <li><a href="{% url 'todolist:task_detail' task.id %}">{{ task.name }}</a></li>
     {% endfor %}
  </ul>
-<a href="{% url 'todolist:task_form'  li.id %}"> Create a new task!</a><br>
+{#<a href="{% url 'todolist:task_list'  li.id task.id %}"> Add tasks to the list</a><br>#}
 <a href="{% url 'todolist:list_delete'  li.id %}"> Delete this list</a><br>
 <a href="{% url 'todolist:list_edit'  li.id %}"> Edit this list</a><br>
 <a href="{% url 'todolist:index' %}"> Return to the dashboard</a>
