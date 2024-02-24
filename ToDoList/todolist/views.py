@@ -40,8 +40,8 @@ def list_create(request):
         form = ListForm(request.POST)
 
         if form.is_valid():
-            name = request.POST.get('name')
-            description = request.POST.get('description')
+            name = form.cleaned_data['name']
+            description = form.cleaned_data['description']
             pub_date = timezone.now()
             new_list = List.objects.create(name=name, description=description, pub_date=pub_date)
             new_list.tasks.set(form.cleaned_data['tasks'])
@@ -59,18 +59,14 @@ def list_edit(request, list_id):
         form = ListForm(request.POST)
 
         if form.is_valid():
-            name = request.POST.get('name')
-            description = request.POST.get('description')
-            pub_date = timezone.now()
             same_list = List.objects.get(pk=list_id)
-            same_list.name = name
-            same_list.description = description
-            same_list.pub_date = pub_date
+            same_list.name = form.cleaned_data['name']
+            same_list.description = form.cleaned_data['description']
             same_list.tasks.set(form.cleaned_data['tasks'])
-            return redirect('todolist:index')
+            return redirect('todolist:list_detail', list_id=list_id)
     else:
         prev_list = List.objects.get(pk=list_id)
-        form = ListForm({'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks})
+        form = ListForm({'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks.all()})
 
     return render(request, 'todolist/list_form2.html', {"form": form, "list_id": list_id})
 
@@ -94,16 +90,36 @@ def task_form(request):
 
 def task_create(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        deadline = request.POST.get('deadline')
-        date_added = timezone.now()
-        importance = request.POST.get('importance')
-        task = Task(name=name, deadline=deadline, date_added=date_added, importance=importance)
-        task.save()
-        print(task.id)
-        return render(request, 'todolist/create_successful.html')
+        form = TaskForm(request.POST)
+
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            deadline = form.cleaned_data['deadline']
+            importance = form.cleaned_data['importance']
+            task = Task(name=name, deadline=deadline, importance=importance, date_added=timezone.now())
+            task.save()
+            return render(request, 'todolist/create_successful.html')
+
+    else:
+        form = TaskForm()
+
+    return render(request, "todolist/task_form.html", {"form": form})
 
 
 def task_edit(request, task_id):
-    form = TaskForm(instance=get_object_or_404(Task, pk=task_id))
-    return render(request, 'todolist/task_form.html', context={'form': form})
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+
+        if form.is_valid():
+            task = Task.objects.get(pk=task_id)
+            task.name = form.cleaned_data['name']
+            task.deadline = form.cleaned_data['deadline']
+            task.importance = form.cleaned_data['importance']
+            task.save()
+            return redirect('todolist:task_detail', task_id=task_id)
+
+    else:
+        prev_task = Task.objects.get(id=task_id)
+        form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance})
+
+    return render(request, "todolist/task_form2.html", {"form": form, "task_id": task_id})

@@ -1,9 +1,11 @@
 <h1>{{ task }}</h1>
  <ul>
-     <li><p>Added at {{ task.date_added}}</p></li>
-     <li><p>Deadline is at {{ task.deadline}}</p></li>
+     <li><p>Added at: {{ task.date_added}}</p></li>
+     <li><p>Deadline is at: {{ task.deadline}}</p></li>
+     <li><p>Importance: {{ task.importance}}</p></li>
      <li><a href="{% url 'todolist:task_delete' task.id %}"> Delete the Task!</a></li>
      <li><a href="{% url 'todolist:task_edit' task.id %}"> Edit the Task!</a></li>
  </ul>
 
+<a href="{% url 'todolist:index' %}"> Return to the dashboard</a>
 

@@ -17,9 +17,9 @@ class Task(models.Model):
 
 
 class List(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
-    description = models.TextField(blank=True)
-    pub_date = models.DateTimeField('date created', null=True, blank=True)
+    name = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+    pub_date = models.DateTimeField('date created')
     tasks = models.ManyToManyField(Task, null=True, blank=True)
 
     def __str__(self):
