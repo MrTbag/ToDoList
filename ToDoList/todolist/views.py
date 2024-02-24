@@ -63,6 +63,7 @@ def list_edit(request, list_id):
             same_list.name = form.cleaned_data['name']
             same_list.description = form.cleaned_data['description']
             same_list.tasks.set(form.cleaned_data['tasks'])
+            same_list.save()
             return redirect('todolist:list_detail', list_id=list_id)
     else:
         prev_list = List.objects.get(pk=list_id)
@@ -81,11 +82,6 @@ def task_delete(request, task_id):
     name = task.name
     task.delete()
     return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'task'})
-
-
-def task_form(request):
-    form = TaskForm(request.POST)
-    return render(request, 'todolist/task_form.html', {'form': form})
 
 
 def task_create(request):
