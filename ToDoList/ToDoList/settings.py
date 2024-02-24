@@ -16,6 +16,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+AUTH_USER_MODEL = 'todolist.CustomUser'
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -78,8 +81,8 @@ WSGI_APPLICATION = 'ToDoList.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tdl',
-        'USER': 'tdl',
+        'NAME': 'todolist',
+        'USER': 'todolist',
         'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '5432',

@@ -8,13 +8,18 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from django.views import generic
-from .models import List, Task
+from .models import List, Task, CustomUser
 from .forms import ListForm, TaskForm
 
+from ToDoList import settings
 
 # Create your views here.
+User = settings.AUTH_USER_MODEL
+
 
 def index(request):
+    user: CustomUser = request.user
+    print(user.lists)
     lists = List.objects.all()
     context = {
         'lists': lists,
