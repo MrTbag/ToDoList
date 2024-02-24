@@ -19,22 +19,24 @@ User = settings.AUTH_USER_MODEL
 
 def index(request):
     user: CustomUser = request.user
-    print(user.lists)
-    lists = List.objects.all()
-    context = {
-        'lists': lists,
-        'user': request.user.username
-    }
-    return render(request, 'todolist/index.html', context)
+    if user.is_authenticated:
+        lists = user.lists.all()
+        context = {
+            'lists': lists,
+            'user': request.user.username
+        }
+        return render(request, 'todolist/index.html', context)
+    else:
+        return render(request, 'todolist/error_login.html')
 
 
 def list_detail(request, list_id):
-    li = get_object_or_404(List, pk=list_id)
+    li = get_object_or_404(List, id=list_id)
     return render(request, 'todolist/list_detail.html', {'li': li})
 
 
 def list_delete(request, list_id):
-    del_list = get_object_or_404(List, pk=list_id)
+    del_list = get_object_or_404(List, id=list_id)
     name = del_list.name
     del_list.delete()
     return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
@@ -51,6 +53,8 @@ def list_create(request):
             new_list = List.objects.create(name=name, description=description, pub_date=pub_date)
             new_list.tasks.set(form.cleaned_data['tasks'])
             new_list.save()
+            user: CustomUser = request.user
+            user.lists.add(new_list)
             return redirect('todolist:index')
 
     else:
