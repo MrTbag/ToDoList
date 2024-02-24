@@ -43,8 +43,6 @@ def list_create(request):
             name = request.POST.get('name')
             description = request.POST.get('description')
             pub_date = timezone.now()
-            tasks = request.POST.get('tasks')
-            print(form.cleaned_data['tasks'])
             new_list = List.objects.create(name=name, description=description, pub_date=pub_date)
             new_list.tasks.set(form.cleaned_data['tasks'])
             new_list.save()
@@ -64,11 +62,15 @@ def list_edit(request, list_id):
             name = request.POST.get('name')
             description = request.POST.get('description')
             pub_date = timezone.now()
-            same_list = List.objects.get(list_id=list_id)
-            same_list.update(name=name, description=description, pub_date=pub_date)
+            same_list = List.objects.get(pk=list_id)
+            same_list.name = name
+            same_list.description = description
+            same_list.pub_date = pub_date
+            same_list.tasks.set(form.cleaned_data['tasks'])
             return redirect('todolist:index')
     else:
-        form = ListForm(instance=get_object_or_404(List, pk=list_id))
+        prev_list = List.objects.get(pk=list_id)
+        form = ListForm({'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks})
 
     return render(request, 'todolist/list_form2.html', {"form": form, "list_id": list_id})
 

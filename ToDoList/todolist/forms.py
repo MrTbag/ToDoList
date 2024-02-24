@@ -2,10 +2,10 @@ from django import forms
 from .models import List, Task
 
 
-class ListForm(forms.Form):
-    name = forms.CharField(max_length=50)
-    description = forms.CharField(max_length=50)
-    tasks = forms.ModelMultipleChoiceField(queryset=Task.objects)
+class ListForm(forms.ModelForm):
+    class Meta:
+        model = List
+        fields = ['name', 'description', 'tasks']
 
 
 class TaskForm(forms.ModelForm):
