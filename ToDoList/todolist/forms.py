@@ -12,3 +12,7 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['name', 'importance', 'deadline']
+
+
+class TaskImportForm(forms.Form):
+    task_link = forms.CharField(label='Task')

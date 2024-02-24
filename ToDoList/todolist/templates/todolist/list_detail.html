@@ -14,5 +14,6 @@
 
 <a href="{% url 'todolist:list_delete'  li.id %}"> Delete this list</a><br>
 <a href="{% url 'todolist:list_edit'  li.id %}"> Edit this list</a><br>
+<a href="{% url 'todolist:task_import'  li.id %}"> Import another user's task into this list</a><br>
 <a href="{% url 'todolist:index' %}"> Return to the dashboard</a>
 

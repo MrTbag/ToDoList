@@ -1,3 +1,4 @@
+import re
 import time
 from unittest import loader
 
@@ -9,7 +10,7 @@ from django.utils import timezone
 
 from django.views import generic
 from .models import List, Task, CustomUser
-from .forms import ListForm, TaskForm
+from .forms import ListForm, TaskForm, TaskImportForm
 
 from ToDoList import settings
 
@@ -133,3 +134,26 @@ def task_edit(request, task_id):
 def task_export(request, task_id):
     url = request.build_absolute_uri()
     return render(request, 'todolist/task_export.html', {'task': get_object_or_404(Task, pk=task_id), 'url': url})
+
+
+def task_import(request, list_id):
+    if request.method == 'POST':
+        form = TaskImportForm(request.POST)
+
+        if form.is_valid():
+            url = form.cleaned_data['task_link']
+            matching_url_regex = '^http://127.0.0.1:8000/todolist/tasks/(?P<task_id>\\d+)/export/$'
+            p = re.compile(matching_url_regex)
+            if p.match(url):
+                task_id = int(p.search(url).group('task_id'))
+            else:
+                return HttpResponse("Invalid URL")
+
+            task = get_object_or_404(Task, pk=task_id)
+            List.objects.get(id=list_id).tasks.add(task)
+            return redirect('todolist:list_detail', list_id=list_id)
+
+    else:
+        form = TaskImportForm()
+
+    return render(request, 'todolist/task_import.html', {'list_id': list_id, 'form': form})
