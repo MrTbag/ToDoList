@@ -5,6 +5,7 @@
      <li><p>Importance: {{ task.importance}}</p></li>
      <li><a href="{% url 'todolist:task_delete' task.id %}"> Delete the Task!</a></li>
      <li><a href="{% url 'todolist:task_edit' task.id %}"> Edit the Task!</a></li>
+     <li><a href="{% url 'todolist:task_export' task.id %}"> Share the Task!</a></li>
  </ul>
 
 <a href="{% url 'todolist:index' %}"> Return to the dashboard</a>

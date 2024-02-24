@@ -128,3 +128,8 @@ def task_edit(request, task_id):
         form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance})
 
     return render(request, "todolist/task_form2.html", {"form": form, "task_id": task_id})
+
+
+def task_export(request, task_id):
+    url = request.build_absolute_uri()
+    return render(request, 'todolist/task_export.html', {'task': get_object_or_404(Task, pk=task_id), 'url': url})
