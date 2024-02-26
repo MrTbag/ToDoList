@@ -1,41 +1,51 @@
 import re
-import time
-from unittest import loader
 
-from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-
 from django.utils import timezone
+from functools import wraps
 
-from django.views import generic
 from .models import List, Task, CustomUser, Hash
 from .forms import ListForm, TaskForm, TaskImportForm
-
 from ToDoList import settings
 
-# Create your views here.
 User = settings.AUTH_USER_MODEL
 
 
+def authorize(func):
+    @wraps(func)
+    def inner(request, *args, **kwargs):
+        user: CustomUser = request.user
+        if user.is_authenticated:
+            return func(request, *args, **kwargs)
+        else:
+            return render(request, 'todolist/error_login.html')
+
+    return inner
+
+
+@authorize
 def index(request):
     user: CustomUser = request.user
+    lists = user.lists.all()
+    context = {
+        'lists': lists,
+        'user': request.user.username
+    }
+    return render(request, 'todolist/index.html', context)
+
+
+@authorize
+def list_detail(request, list_id):
+    user: CustomUser = request.user
     if user.is_authenticated:
-        lists = user.lists.all()
-        context = {
-            'lists': lists,
-            'user': request.user.username
-        }
-        return render(request, 'todolist/index.html', context)
+        li = get_object_or_404(List, id=list_id)
+        return render(request, 'todolist/list_detail.html', {'li': li})
     else:
         return render(request, 'todolist/error_login.html')
 
 
-def list_detail(request, list_id):
-    li = get_object_or_404(List, id=list_id)
-    return render(request, 'todolist/list_detail.html', {'li': li})
-
-
+@authorize
 def list_delete(request, list_id):
     del_list = get_object_or_404(List, id=list_id)
     name = del_list.name
@@ -43,6 +53,7 @@ def list_delete(request, list_id):
     return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
 
 
+@authorize
 def list_create(request):
     if request.method == 'POST':
         form = ListForm(request.POST)
@@ -64,6 +75,7 @@ def list_create(request):
     return render(request, "todolist/list_form.html", {"form": form})
 
 
+@authorize
 def list_edit(request, list_id):
     if request.method == 'POST':
         form = ListForm(request.POST)
@@ -87,6 +99,7 @@ def task_detail(request, task_id):
     return render(request, 'todolist/task_detail.html', {'task': task})
 
 
+@authorize
 def task_delete(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
     name = task.name
@@ -94,6 +107,7 @@ def task_delete(request, task_id):
     return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'task'})
 
 
+@authorize
 def task_create(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
@@ -112,6 +126,7 @@ def task_create(request):
     return render(request, "todolist/task_form.html", {"form": form})
 
 
+@authorize
 def task_edit(request, task_id):
     if request.method == 'POST':
         form = TaskForm(request.POST)
@@ -131,6 +146,7 @@ def task_edit(request, task_id):
     return render(request, "todolist/task_form2.html", {"form": form, "task_id": task_id})
 
 
+@authorize
 def task_export(request, task_id):
     url = request.build_absolute_uri()
     print(url)
@@ -148,6 +164,7 @@ def task_export(request, task_id):
                   {'task': get_object_or_404(Task, pk=task_id), 'url': begin + hashed + '/'})
 
 
+@authorize
 def task_import(request, list_id):
     if request.method == 'POST':
         form = TaskImportForm(request.POST)
