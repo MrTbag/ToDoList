@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from django.views import generic
-from .models import List, Task, CustomUser
+from .models import List, Task, CustomUser, Hash
 from .forms import ListForm, TaskForm, TaskImportForm
 
 from ToDoList import settings
@@ -133,7 +133,19 @@ def task_edit(request, task_id):
 
 def task_export(request, task_id):
     url = request.build_absolute_uri()
-    return render(request, 'todolist/task_export.html', {'task': get_object_or_404(Task, pk=task_id), 'url': url})
+    print(url)
+
+    if not Hash.objects.filter(long_url=url).exists():
+        hashed = str(abs(hash(url)))[:10]
+        new_hash = Hash(hashed=hashed, long_url=url)
+        new_hash.save()
+
+    else:
+        hashed = Hash.objects.get(long_url=url).hashed
+
+    begin = 'http://shrtn.link/'
+    return render(request, 'todolist/task_export.html',
+                  {'task': get_object_or_404(Task, pk=task_id), 'url': begin + hashed + '/'})
 
 
 def task_import(request, list_id):
@@ -142,16 +154,19 @@ def task_import(request, list_id):
 
         if form.is_valid():
             url = form.cleaned_data['task_link']
-            matching_url_regex = '^http://127.0.0.1:8000/todolist/tasks/(?P<task_id>\\d+)/export/$'
+            matching_url_regex = '^http://shrtn.link/(?P<hashed>\\d+)/$'
             p = re.compile(matching_url_regex)
             if p.match(url):
-                task_id = int(p.search(url).group('task_id'))
-            else:
-                return HttpResponse("Invalid URL")
+                long_url = str(Hash.objects.get(hashed=p.search(url).group('hashed')).long_url)
+                matching_url_regex = '^http://127.0.0.1:8000/todolist/tasks/(?P<task_id>\\d+)/export/$'
+                p = re.compile(matching_url_regex)
+                if p.match(long_url):
+                    task_id = int(p.search(long_url).group('task_id'))
+                    task = get_object_or_404(Task, pk=task_id)
+                    List.objects.get(id=list_id).tasks.add(task)
+                    return redirect('todolist:list_detail', list_id=list_id)
 
-            task = get_object_or_404(Task, pk=task_id)
-            List.objects.get(id=list_id).tasks.add(task)
-            return redirect('todolist:list_detail', list_id=list_id)
+            return HttpResponse("Invalid URL")
 
     else:
         form = TaskImportForm()

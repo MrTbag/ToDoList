@@ -26,5 +26,13 @@ class List(models.Model):
         return self.name
 
 
+class Hash(models.Model):
+    long_url = models.CharField(max_length=200)
+    hashed = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.hashed
+
+
 class CustomUser(AbstractUser):
     lists = models.ManyToManyField(List)
