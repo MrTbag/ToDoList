@@ -3,6 +3,10 @@
      <li><p>Added at: {{ task.date_added}}</p></li>
      <li><p>Deadline is at: {{ task.deadline}}</p></li>
      <li><p>Importance: {{ task.importance}}</p></li>
+     <li>{{ task.file }}</li>
+     {% if task.image %}
+        <li> <img alt="" src={{ task.image.url }}> </li>
+     {% endif %}
      <li><a href="{% url 'todolist:task_delete' task.id %}"> Delete the Task!</a></li>
      <li><a href="{% url 'todolist:task_edit' task.id %}"> Edit the Task!</a></li>
      <li><a href="{% url 'todolist:task_export' task.id %}"> Share the Task!</a></li>

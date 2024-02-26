@@ -110,13 +110,16 @@ def task_delete(request, task_id):
 @authorize
 def task_create(request):
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = TaskForm(request.POST, request.FILES)
 
         if form.is_valid():
             name = form.cleaned_data['name']
             deadline = form.cleaned_data['deadline']
             importance = form.cleaned_data['importance']
-            task = Task(name=name, deadline=deadline, importance=importance, date_added=timezone.now())
+            file = request.FILES['file']
+            image = request.FILES['image']
+            task = Task(name=name, deadline=deadline, importance=importance, date_added=timezone.now(), file=file,
+                        image=image)
             task.save()
             return render(request, 'todolist/create_successful.html')
 
@@ -129,19 +132,22 @@ def task_create(request):
 @authorize
 def task_edit(request, task_id):
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = TaskForm(request.POST, request.FILES)
 
         if form.is_valid():
             task = Task.objects.get(pk=task_id)
             task.name = form.cleaned_data['name']
             task.deadline = form.cleaned_data['deadline']
             task.importance = form.cleaned_data['importance']
+            task.file = request.FILES['file']
+            task.image = form.cleaned_data['image']
             task.save()
             return redirect('todolist:task_detail', task_id=task_id)
 
     else:
         prev_task = Task.objects.get(id=task_id)
-        form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance})
+        form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance,
+                         'file': prev_task.file, 'image': prev_task.image})
 
     return render(request, "todolist/task_form2.html", {"form": form, "task_id": task_id})
 

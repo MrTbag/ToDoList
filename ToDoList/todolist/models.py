@@ -8,6 +8,8 @@ class Task(models.Model):
     importance = models.IntegerField()
     date_added = models.DateTimeField('date added')
     deadline = models.DateField('deadline')
+    file = models.FileField(null=True, default=None)
+    image = models.ImageField(null=True, default=None)
 
     class Meta:
         ordering = ('importance', 'date_added',)
