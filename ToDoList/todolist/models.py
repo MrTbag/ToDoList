@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 class Task(models.Model):
     name = models.CharField(max_length=50)
-    done = models.BooleanField(default=False)
+    done = models.BooleanField(default=False)  # implement this
     importance = models.IntegerField()
     date_added = models.DateTimeField('date added')
     deadline = models.DateField('deadline')
@@ -30,7 +30,7 @@ class List(models.Model):
 
 class Hash(models.Model):
     long_url = models.CharField(max_length=200)
-    hashed = models.CharField(max_length=100)
+    hashed = models.CharField(max_length=100)  # should be unique
 
     def __str__(self):
         return self.hashed

@@ -12,6 +12,7 @@ from ToDoList import settings
 User = settings.AUTH_USER_MODEL
 
 
+# middleware
 def authorize(func):
     @wraps(func)
     def inner(request, *args, **kwargs):
@@ -37,12 +38,9 @@ def index(request):
 
 @authorize
 def list_detail(request, list_id):
-    user: CustomUser = request.user
-    if user.is_authenticated:
-        li = get_object_or_404(List, id=list_id)
-        return render(request, 'todolist/list_detail.html', {'li': li})
-    else:
-        return render(request, 'todolist/error_login.html')
+    # check the owner
+    li = get_object_or_404(List, id=list_id)  # change the name
+    return render(request, 'todolist/list_detail.html', {'li': li})
 
 
 @authorize
@@ -116,6 +114,8 @@ def task_create(request):
             name = form.cleaned_data['name']
             deadline = form.cleaned_data['deadline']
             importance = form.cleaned_data['importance']
+            # double check client being able to send no files/images
+            # request.FILES.get('file', None)
             file = request.FILES['file']
             image = request.FILES['image']
             task = Task(name=name, deadline=deadline, importance=importance, date_added=timezone.now(), file=file,
@@ -146,6 +146,7 @@ def task_edit(request, task_id):
 
     else:
         prev_task = Task.objects.get(id=task_id)
+        # doesn't pre-populate with file/image
         form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance,
                          'file': prev_task.file, 'image': prev_task.image})
 
@@ -155,7 +156,6 @@ def task_edit(request, task_id):
 @authorize
 def task_export(request, task_id):
     url = request.build_absolute_uri()
-    print(url)
 
     if not Hash.objects.filter(long_url=url).exists():
         hashed = str(abs(hash(url)))[:10]
@@ -170,6 +170,7 @@ def task_export(request, task_id):
                   {'task': get_object_or_404(Task, pk=task_id), 'url': begin + hashed + '/'})
 
 
+# import: check if he has the task from beforehand. update: it is
 @authorize
 def task_import(request, list_id):
     if request.method == 'POST':
