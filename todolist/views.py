@@ -9,9 +9,6 @@ from .models import List, Task, CustomUser, Hash
 from .forms import ListForm, TaskForm, TaskImportForm
 from TickApp import settings
 
-User = settings.AUTH_USER_MODEL
-
-
 # middleware
 def authorize(func):
     @wraps(func)

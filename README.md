@@ -21,3 +21,9 @@
 6. #### You can now interact with the project through
     > *http://127.0.0.1:8000/todolist*
 
+To run the project in a production environment, use the command below:
+```djangourlpath
+ python manage.py runserver --settings=TickApp.settings.production
+```
+
+

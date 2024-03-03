@@ -130,7 +130,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+TickApp/settings/.env
 .venv
 env/
 venv/
