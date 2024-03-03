@@ -3,24 +3,14 @@ import re
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from functools import wraps
+
 
 from .models import List, Task, CustomUser, Hash
 from .forms import ListForm, TaskForm, TaskImportForm
-from TickApp import settings
+from .decorators import authorize
+
 
 # middleware
-def authorize(func):
-    @wraps(func)
-    def inner(request, *args, **kwargs):
-        user: CustomUser = request.user
-        if user.is_authenticated:
-            return func(request, *args, **kwargs)
-        else:
-            return render(request, 'todolist/error_login.html')
-
-    return inner
-
 
 @authorize
 def index(request):
