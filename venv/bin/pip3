@@ -1,4 +1,4 @@
-#!/home/mahdi/PycharmProjects/TDL/ToDoList/venv/bin/python3
+#!/home/mahdi/PycharmProjects/TickApp/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
