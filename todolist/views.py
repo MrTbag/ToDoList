@@ -12,20 +12,26 @@ from .decorators import authorize
 
 @authorize
 def index(request):
-    user: CustomUser = request.user
-    lists = user.lists.all()
-    context = {
-        'lists': lists,
-        'user': request.user.username
-    }
-    return render(request, 'todolist/index.html', context)
+    if request.method == 'GET':
+        user: CustomUser = request.user
+        lists = user.lists.all()
+        context = {
+            'lists': lists,
+            'user': request.user.username
+        }
+        return render(request, 'todolist/index.html', context)
+
+    return render(request, 'todolist/wrong_method.html')
 
 
 @authorize
 def list_detail(request, list_id):
     # check the owner
-    current_list = get_object_or_404(List, id=list_id)  # change the name
-    return render(request, 'todolist/list_detail.html', {'list': current_list})
+    if request.method == 'GET':
+        current_list = get_object_or_404(List, id=list_id)  # change the name
+        return render(request, 'todolist/list_detail.html', {'list': current_list})
+
+    return render(request, 'todolist/wrong_method.html')
 
 
 @authorize
@@ -52,10 +58,11 @@ def list_create(request):
             user.lists.add(new_list)
             return redirect('todolist:index')
 
-    else:
+    elif request.method == 'GET':
         form = ListForm()
+        return render(request, "todolist/list_form.html", {"form": form})
 
-    return render(request, "todolist/list_form.html", {"form": form})
+    return render(request, 'todolist/wrong_method.html')
 
 
 @authorize
@@ -74,13 +81,17 @@ def list_edit(request, list_id):
     elif request.method == 'GET':
         prev_list = get_object_or_404(List, id=list_id)
         form = ListForm({'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks.all()})
+        return render(request, 'todolist/list_form2.html', {"form": form, "list_id": list_id})
 
-    return render(request, 'todolist/list_form2.html', {"form": form, "list_id": list_id})
+    return render(request, 'todolist/wrong_method.html')
 
 
 def task_detail(request, task_id):
-    task = get_object_or_404(Task, pk=task_id)
-    return render(request, 'todolist/task_detail.html', {'task': task})
+    if request.method == 'GET':
+        task = get_object_or_404(Task, pk=task_id)
+        return render(request, 'todolist/task_detail.html', {'task': task})
+
+    return render(request, 'todolist/wrong_method.html')
 
 
 @authorize
@@ -109,10 +120,11 @@ def task_create(request):
             task.save()
             return render(request, 'todolist/create_successful.html')
 
-    else:
+    elif request.method == 'GET':
         form = TaskForm()
+        return render(request, "todolist/task_form.html", {"form": form})
 
-    return render(request, "todolist/task_form.html", {"form": form})
+    return render(request, 'todolist/wrong_method.html')
 
 
 @authorize
@@ -130,30 +142,34 @@ def task_edit(request, task_id):
             task.save()
             return redirect('todolist:task_detail', task_id=task_id)
 
-    else:
+    elif request.method == 'GET':
         prev_task = get_object_or_404(Task, id=task_id)
         # doesn't pre-populate with file/image
         form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance,
                          'file': prev_task.file, 'image': prev_task.image})
+        return render(request, "todolist/task_form2.html", {"form": form, "task_id": task_id})
 
-    return render(request, "todolist/task_form2.html", {"form": form, "task_id": task_id})
+    return render(request, 'todolist/wrong_method.html')
 
 
 @authorize
 def task_export(request, task_id):
-    url = request.build_absolute_uri()
+    if request.method == 'GET':
+        url = request.build_absolute_uri()
 
-    if not Hash.objects.filter(long_url=url).exists():
-        hashed = str(abs(hash(url)))[:10]
-        new_hash = Hash(hashed=hashed, long_url=url)
-        new_hash.save()
+        if not Hash.objects.filter(long_url=url).exists():
+            hashed = str(abs(hash(url)))[:10]
+            new_hash = Hash(hashed=hashed, long_url=url)
+            new_hash.save()
 
-    else:
-        hashed = Hash.objects.get(long_url=url).hashed
+        else:
+            hashed = Hash.objects.get(long_url=url).hashed
 
-    begin = 'http://shrtn.link/'
-    return render(request, 'todolist/task_export.html',
-                  {'task': get_object_or_404(Task, pk=task_id), 'url': begin + hashed + '/'})
+        begin = 'http://shrtn.link/'
+        return render(request, 'todolist/task_export.html',
+                      {'task': get_object_or_404(Task, pk=task_id), 'url': begin + hashed + '/'})\
+
+    return render(request, 'todolist/wrong_method.html')
 
 
 # import: check if he has the task from beforehand. update: it is
@@ -178,7 +194,8 @@ def task_import(request, list_id):
 
             return HttpResponse("Invalid URL")
 
-    else:
+    elif request.method == 'GET':
         form = TaskImportForm()
+        return render(request, 'todolist/task_import.html', {'list_id': list_id, 'form': form})
 
-    return render(request, 'todolist/task_import.html', {'list_id': list_id, 'form': form})
+    return render(request, 'todolist/wrong_method.html')
