@@ -2,9 +2,10 @@
 *.log
 *.pot
 *.pyc
-__pycache__/
+TickApp/__pycache__/
+todolist/__pycache__/
 local_settings.py
-db.local
+localdb
 db.sqlite3-journal
 media
 venv/
