@@ -6,7 +6,7 @@ class Task(models.Model):
     name = models.CharField(max_length=50)
     done = models.BooleanField(default=False)  # implement this
     importance = models.IntegerField()
-    date_added = models.DateTimeField('date added')
+    date_added = models.DateTimeField('date added', auto_now_add=True)
     deadline = models.DateField('deadline')
     file = models.FileField(null=True, default=None)
     image = models.ImageField(null=True, default=None)
@@ -21,7 +21,7 @@ class Task(models.Model):
 class List(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
-    pub_date = models.DateTimeField('date created')
+    pub_date = models.DateTimeField('date created', auto_now_add=True)
     tasks = models.ManyToManyField(Task, null=True, blank=True)
 
     def __str__(self):
@@ -30,7 +30,7 @@ class List(models.Model):
 
 class Hash(models.Model):
     long_url = models.CharField(max_length=200)
-    hashed = models.CharField(max_length=100)  # should be unique
+    hashed = models.CharField(max_length=100, unique=True)  # should be unique
 
     def __str__(self):
         return self.hashed

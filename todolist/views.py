@@ -46,8 +46,7 @@ def list_create(request):
         if form.is_valid():
             name = form.cleaned_data['name']
             description = form.cleaned_data['description']
-            pub_date = timezone.now()
-            new_list = List.objects.create(name=name, description=description, pub_date=pub_date)
+            new_list = List.objects.create(name=name, description=description)
             new_list.tasks.set(form.cleaned_data['tasks'])
             new_list.save()
             user: CustomUser = request.user
@@ -105,7 +104,7 @@ def task_create(request):
             # request.FILES.get('file', None)
             file = request.FILES['file']
             image = request.FILES['image']
-            task = Task(name=name, deadline=deadline, importance=importance, date_added=timezone.now(), file=file,
+            task = Task(name=name, deadline=deadline, importance=importance, file=file,
                         image=image)
             task.save()
             return render(request, 'todolist/create_successful.html')
