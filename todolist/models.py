@@ -22,7 +22,7 @@ class List(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
     pub_date = models.DateTimeField('date created', auto_now_add=True)
-    tasks = models.ManyToManyField(Task, null=True, blank=True)
+    tasks = models.ManyToManyField(Task, blank=True)
 
     def __str__(self):
         return self.name

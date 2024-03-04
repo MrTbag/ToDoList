@@ -2,8 +2,6 @@ import re
 
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.utils import timezone
-
 
 from .models import List, Task, CustomUser, Hash
 from .forms import ListForm, TaskForm, TaskImportForm
@@ -26,12 +24,13 @@ def index(request):
 @authorize
 def list_detail(request, list_id):
     # check the owner
-    li = get_object_or_404(List, id=list_id)  # change the name
-    return render(request, 'todolist/list_detail.html', {'li': li})
+    current_list = get_object_or_404(List, id=list_id)  # change the name
+    return render(request, 'todolist/list_detail.html', {'list': current_list})
 
 
 @authorize
 def list_delete(request, list_id):
+    # Check if method is DELETE
     del_list = get_object_or_404(List, id=list_id)
     name = del_list.name
     del_list.delete()
@@ -65,14 +64,15 @@ def list_edit(request, list_id):
         form = ListForm(request.POST)
 
         if form.is_valid():
-            same_list = List.objects.get(pk=list_id)
+            same_list = get_object_or_404(List, id=list_id)
             same_list.name = form.cleaned_data['name']
             same_list.description = form.cleaned_data['description']
             same_list.tasks.set(form.cleaned_data['tasks'])
             same_list.save()
             return redirect('todolist:list_detail', list_id=list_id)
-    else:
-        prev_list = List.objects.get(pk=list_id)
+
+    elif request.method == 'GET':
+        prev_list = get_object_or_404(List, id=list_id)
         form = ListForm({'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks.all()})
 
     return render(request, 'todolist/list_form2.html', {"form": form, "list_id": list_id})
@@ -121,7 +121,7 @@ def task_edit(request, task_id):
         form = TaskForm(request.POST, request.FILES)
 
         if form.is_valid():
-            task = Task.objects.get(pk=task_id)
+            task = get_object_or_404(Task, id=task_id)
             task.name = form.cleaned_data['name']
             task.deadline = form.cleaned_data['deadline']
             task.importance = form.cleaned_data['importance']
@@ -131,7 +131,7 @@ def task_edit(request, task_id):
             return redirect('todolist:task_detail', task_id=task_id)
 
     else:
-        prev_task = Task.objects.get(id=task_id)
+        prev_task = get_object_or_404(Task, id=task_id)
         # doesn't pre-populate with file/image
         form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance,
                          'file': prev_task.file, 'image': prev_task.image})

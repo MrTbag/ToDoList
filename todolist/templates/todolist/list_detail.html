@@ -1,19 +1,19 @@
-<h1>{{ li }}</h1>
+<h1>{{ list }}</h1>
 <h3>Tasks: </h3>
  <ul>
-    {% for task in li.tasks.all %}
+    {% for task in list.tasks.all %}
         <li><a href="{% url 'todolist:task_detail' task.id %}">{{ task.name }}</a></li>
     {% endfor %}
  </ul>
 
 <h3>Details: </h3>
 <ul>
-    <li><p>Description: {{ li.description }}</p></li>
-    <li><p>Date Published: {{ li.pub_date }}</p></li>
+    <li><p>Description: {{ list.description }}</p></li>
+    <li><p>Date Published: {{ list.pub_date }}</p></li>
 </ul>
 
-<a href="{% url 'todolist:list_delete'  li.id %}"> Delete this list</a><br>
-<a href="{% url 'todolist:list_edit'  li.id %}"> Edit this list</a><br>
-<a href="{% url 'todolist:task_import'  li.id %}"> Import another user's task into this list</a><br>
+<a href="{% url 'todolist:list_delete'  list.id %}"> Delete this list</a><br>
+<a href="{% url 'todolist:list_edit'  list.id %}"> Edit this list</a><br>
+<a href="{% url 'todolist:task_import'  list.id %}"> Import another user's task into this list</a><br>
 <a href="{% url 'todolist:index' %}"> Return to the dashboard</a>
 
