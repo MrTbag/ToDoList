@@ -28,6 +28,7 @@
     <option name="TEMPLATE_FOLDERS">
       <list>
         <option value="$MODULE_DIR$/todolist/templates" />
+        <option value="$MODULE_DIR$/url_shortener/templates" />
       </list>
     </option>
   </component>

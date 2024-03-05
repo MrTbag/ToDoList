@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('todolist/', include('todolist.urls')),
+    path('shorturl/', include('url_shortener.urls')),
     path('admin/', admin.site.urls, name='admin'),
 ]
 

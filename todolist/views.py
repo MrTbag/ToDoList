@@ -1,11 +1,13 @@
 import re
 
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 
-from .models import List, Task, CustomUser, Hash
+from .models import List, Task, CustomUser
 from .forms import ListForm, TaskForm, TaskImportForm
 from .decorators import authorize
+
+from url_shortener.models import UrlDict
 
 
 # middleware
@@ -152,21 +154,11 @@ def task_edit(request, task_id):
 
 
 @authorize
-def task_export(request, task_id):
+def task_export(request, task_id=None):
     if request.method == 'GET':
-        url = request.build_absolute_uri()
-
-        if not Hash.objects.filter(long_url=url).exists():
-            hashed = str(abs(hash(url)))[:10]
-            new_hash = Hash(hashed=hashed, long_url=url)
-            new_hash.save()
-
-        else:
-            hashed = Hash.objects.get(long_url=url).hashed
-
-        begin = 'http://shrtn.link/'
-        return render(request, 'todolist/task_export.html',
-                      {'task': get_object_or_404(Task, pk=task_id), 'url': begin + hashed + '/'})\
+        task = get_object_or_404(Task, id=task_id)
+        return render(request, 'todolist/task_export.html', {'url': request.build_absolute_uri(),
+                                                             'task': task})
 
     return render(request, 'todolist/wrong_method.html')
 
@@ -178,14 +170,14 @@ def task_import(request, list_id):
 
         if form.is_valid():
             url = form.cleaned_data['task_link']
-            matching_url_regex = '^http://shrtn.link/(?P<hashed>\\d+)/$'
-            p = re.compile(matching_url_regex)
-            if p.match(url):
-                long_url = str(Hash.objects.get(hashed=p.search(url).group('hashed')).long_url)
-                matching_url_regex = '^http://127.0.0.1:8000/todolist/tasks/(?P<task_id>\\d+)/export/$'
+            if UrlDict.objects.filter(key=url).exists():
+                original_url = str(UrlDict.objects.get(key=url).original_url)
+                matching_url_regex = ('^http://' + request.get_host() + '/' + request.resolver_match.app_name +
+                                      '/tasks/' + '(?P<task_id>\\d+)/export/$')
+                print(request.resolver_match.app_name)
                 p = re.compile(matching_url_regex)
-                if p.match(long_url):
-                    task_id = int(p.search(long_url).group('task_id'))
+                if p.match(original_url):
+                    task_id = int(p.search(original_url).group('task_id'))
                     task = get_object_or_404(Task, pk=task_id)
                     get_object_or_404(List, id=list_id).tasks.add(task)
                     return redirect('todolist:list_detail', list_id=list_id)

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'todolist.apps.TodolistConfig',
+    'url_shortener.apps.UrlShortenerConfig',
 ]
 
 MIDDLEWARE = [
