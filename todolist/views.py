@@ -112,10 +112,8 @@ def task_create(request):
             deadline = form.cleaned_data['deadline']
             importance = form.cleaned_data['importance']
             done = form.cleaned_data['done']
-            # TODO: double check client being able to send no files/images
-            # request.FILES.get('file', None)
-            file = request.FILES['file']
-            image = request.FILES['image']
+            file = request.FILES.get('file', None)
+            image = request.FILES.get('image', None)
             task = Task(name=name, deadline=deadline, importance=importance, file=file,
                         image=image, done=done)
             task.save()
@@ -138,15 +136,14 @@ def task_edit(request, task_id):
             task.name = form.cleaned_data['name']
             task.deadline = form.cleaned_data['deadline']
             task.importance = form.cleaned_data['importance']
-            task.file = request.FILES['file']
-            task.image = form.cleaned_data['image']
+            task.file = request.FILES.get('file', None)
+            task.image = request.FILES.get('image', None)
             task.done = form.cleaned_data['done']
             task.save()
             return redirect('todolist:task_detail', task_id=task_id)
 
     elif request.method == 'GET':
         prev_task = get_object_or_404(Task, id=task_id)
-        # TODO: doesn't pre-populate with file/image
         form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance,
                          'file': prev_task.file, 'image': prev_task.image, 'done': prev_task.done})
         return render(request, "todolist/task_form_edit.html", {"form": form, "task_id": task_id})
@@ -174,7 +171,6 @@ def task_export(request, task_id):
     return render(request, 'todolist/wrong_method.html')
 
 
-# import: check if he has the task from beforehand. update: it is
 @authorize
 def task_import(request, list_id):
     if request.method == 'POST':
@@ -191,7 +187,7 @@ def task_import(request, list_id):
                 if p.match(long_url):
                     task_id = int(p.search(long_url).group('task_id'))
                     task = get_object_or_404(Task, pk=task_id)
-                    List.objects.get(id=list_id).tasks.add(task)
+                    get_object_or_404(List, id=list_id).tasks.add(task)
                     return redirect('todolist:list_detail', list_id=list_id)
 
             return HttpResponse("Invalid URL")

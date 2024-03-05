@@ -4,12 +4,12 @@ from django.contrib.auth.models import AbstractUser
 
 class Task(models.Model):
     name = models.CharField(max_length=50)
-    done = models.BooleanField(default=False)  # implement this
+    done = models.BooleanField(default=False)
     importance = models.IntegerField()
     date_added = models.DateTimeField('date added', auto_now_add=True)
     deadline = models.DateField('deadline')
-    file = models.FileField(null=True, default=None)
-    image = models.ImageField(null=True, default=None)
+    file = models.FileField(null=True, blank=True)
+    image = models.ImageField(null=True, blank=True)
 
     class Meta:
         ordering = ('importance', 'date_added',)
