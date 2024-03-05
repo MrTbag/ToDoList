@@ -8,7 +8,9 @@
      <li><p>Added at: {{ task.date_added}}</p></li>
      <li><p>Deadline is at: {{ task.deadline}}</p></li>
      <li><p>Importance: {{ task.importance}}</p></li>
-     <li>{{ task.file }}</li>
+     {% if task.file %}
+        <li> <a href="{{ task.file.url }}"> {{ task.file }}</a> </li>
+     {% endif %}
      {% if task.image %}
         <li> <img alt="" src={{ task.image.url }}> </li>
      {% endif %}
