@@ -111,12 +111,13 @@ def task_create(request):
             name = form.cleaned_data['name']
             deadline = form.cleaned_data['deadline']
             importance = form.cleaned_data['importance']
+            done = form.cleaned_data['done']
             # TODO: double check client being able to send no files/images
             # request.FILES.get('file', None)
             file = request.FILES['file']
             image = request.FILES['image']
             task = Task(name=name, deadline=deadline, importance=importance, file=file,
-                        image=image)
+                        image=image, done=done)
             task.save()
             return render(request, 'todolist/create_successful.html')
 
@@ -139,14 +140,15 @@ def task_edit(request, task_id):
             task.importance = form.cleaned_data['importance']
             task.file = request.FILES['file']
             task.image = form.cleaned_data['image']
+            task.done = form.cleaned_data['done']
             task.save()
             return redirect('todolist:task_detail', task_id=task_id)
 
     elif request.method == 'GET':
         prev_task = get_object_or_404(Task, id=task_id)
-        # doesn't pre-populate with file/image
+        # TODO: doesn't pre-populate with file/image
         form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance,
-                         'file': prev_task.file, 'image': prev_task.image})
+                         'file': prev_task.file, 'image': prev_task.image, 'done': prev_task.done})
         return render(request, "todolist/task_form2.html", {"form": form, "task_id": task_id})
 
     return render(request, 'todolist/wrong_method.html')

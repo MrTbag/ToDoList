@@ -11,7 +11,7 @@ class ListForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['name', 'importance', 'deadline', 'file', 'image']
+        fields = ['name', 'importance', 'deadline', 'done', 'file', 'image']
 
 
 class TaskImportForm(forms.Form):
