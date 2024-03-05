@@ -111,7 +111,7 @@ def task_create(request):
             name = form.cleaned_data['name']
             deadline = form.cleaned_data['deadline']
             importance = form.cleaned_data['importance']
-            # double check client being able to send no files/images
+            # TODO: double check client being able to send no files/images
             # request.FILES.get('file', None)
             file = request.FILES['file']
             image = request.FILES['image']

@@ -30,7 +30,7 @@ class List(models.Model):
 
 class Hash(models.Model):
     long_url = models.CharField(max_length=200)
-    hashed = models.CharField(max_length=100, unique=True)  # should be unique
+    hashed = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.hashed
