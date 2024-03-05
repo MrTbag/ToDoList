@@ -1,18 +1,16 @@
 import re
 
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect, reverse
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import List, Task, CustomUser
 from .forms import ListForm, TaskForm, TaskImportForm
-from .decorators import authorize
 
 from url_shortener.models import UrlDict
 
 
 # middleware
 
-@authorize
 def index(request):
     if request.method == 'GET':
         user: CustomUser = request.user
@@ -26,7 +24,6 @@ def index(request):
     return render(request, 'todolist/wrong_method.html')
 
 
-@authorize
 def list_detail(request, list_id):
     # check the owner
     if request.method == 'GET':
@@ -36,7 +33,6 @@ def list_detail(request, list_id):
     return render(request, 'todolist/wrong_method.html')
 
 
-@authorize
 def list_delete(request, list_id):
     # Check if method is DELETE
     del_list = get_object_or_404(List, id=list_id)
@@ -45,7 +41,6 @@ def list_delete(request, list_id):
     return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
 
 
-@authorize
 def list_create(request):
     if request.method == 'POST':
         form = ListForm(request.POST)
@@ -67,7 +62,6 @@ def list_create(request):
     return render(request, 'todolist/wrong_method.html')
 
 
-@authorize
 def list_edit(request, list_id):
     if request.method == 'POST':
         form = ListForm(request.POST)
@@ -96,7 +90,6 @@ def task_detail(request, task_id):
     return render(request, 'todolist/wrong_method.html')
 
 
-@authorize
 def task_delete(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
     name = task.name
@@ -104,7 +97,6 @@ def task_delete(request, task_id):
     return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'task'})
 
 
-@authorize
 def task_create(request):
     if request.method == 'POST':
         form = TaskForm(request.POST, request.FILES)
@@ -128,7 +120,6 @@ def task_create(request):
     return render(request, 'todolist/wrong_method.html')
 
 
-@authorize
 def task_edit(request, task_id):
     if request.method == 'POST':
         form = TaskForm(request.POST, request.FILES)
@@ -153,7 +144,6 @@ def task_edit(request, task_id):
     return render(request, 'todolist/wrong_method.html')
 
 
-@authorize
 def task_export(request, task_id=None):
     if request.method == 'GET':
         task = get_object_or_404(Task, id=task_id)
@@ -163,7 +153,6 @@ def task_export(request, task_id=None):
     return render(request, 'todolist/wrong_method.html')
 
 
-@authorize
 def task_import(request, list_id):
     if request.method == 'POST':
         form = TaskImportForm(request.POST)
