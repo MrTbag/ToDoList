@@ -60,7 +60,7 @@ def list_create(request):
 
     elif request.method == 'GET':
         form = ListForm()
-        return render(request, "todolist/list_form.html", {"form": form})
+        return render(request, "todolist/list_form_create.html", {"form": form})
 
     return render(request, 'todolist/wrong_method.html')
 
@@ -81,7 +81,7 @@ def list_edit(request, list_id):
     elif request.method == 'GET':
         prev_list = get_object_or_404(List, id=list_id)
         form = ListForm({'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks.all()})
-        return render(request, 'todolist/list_form2.html', {"form": form, "list_id": list_id})
+        return render(request, 'todolist/list_form_edit.html', {"form": form, "list_id": list_id})
 
     return render(request, 'todolist/wrong_method.html')
 
@@ -123,7 +123,7 @@ def task_create(request):
 
     elif request.method == 'GET':
         form = TaskForm()
-        return render(request, "todolist/task_form.html", {"form": form})
+        return render(request, "todolist/task_form_create.html", {"form": form})
 
     return render(request, 'todolist/wrong_method.html')
 
@@ -149,7 +149,7 @@ def task_edit(request, task_id):
         # TODO: doesn't pre-populate with file/image
         form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance,
                          'file': prev_task.file, 'image': prev_task.image, 'done': prev_task.done})
-        return render(request, "todolist/task_form2.html", {"form": form, "task_id": task_id})
+        return render(request, "todolist/task_form_edit.html", {"form": form, "task_id": task_id})
 
     return render(request, 'todolist/wrong_method.html')
 
