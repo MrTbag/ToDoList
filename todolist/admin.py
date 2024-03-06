@@ -14,14 +14,14 @@ class ListAdmin(admin.ModelAdmin):
     ]
     inlines = [TaskInline]
 
-    list_display = ['name', 'pub_date', 'task_count']
+    list_display = ['name', 'pub_date', 'task_count', 'owner']
 
     list_filter = ['pub_date']
 
-    search_fields = ['name']
+    search_fields = ['name',]
 
-    def task_count(self, obj):
-        from django.db.models import Count
+    @staticmethod
+    def task_count(obj):
         result = Task.objects.filter(list=obj).count()
         return result
 

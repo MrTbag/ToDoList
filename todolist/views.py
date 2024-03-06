@@ -12,7 +12,7 @@ from url_shortener.models import UrlDict
 def index(request):
     if request.method == 'GET':
         user: CustomUser = request.user
-        lists = user.lists.all()
+        lists = user.list_set.all()
         context = {
             'lists': lists,
             'user': request.user.username
@@ -26,7 +26,7 @@ def list_detail(request, list_id):
     if request.method == 'GET':
         current_list = get_object_or_404(List, id=list_id)
         user: CustomUser = request.user
-        if user.lists.contains(current_list):
+        if user.list_set.contains(current_list):
             return render(request, 'todolist/list_detail.html', {'list': current_list})
         else:
             return render(request, 'todolist/access_denied.html')
@@ -37,7 +37,7 @@ def list_detail(request, list_id):
 def list_delete(request, list_id):
     user: CustomUser = request.user
     del_list = get_object_or_404(List, id=list_id)
-    if user.lists.contains(del_list):
+    if user.list_set.contains(del_list):
         name = del_list.name
         del_list.delete()
         return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
@@ -52,11 +52,10 @@ def list_create(request):
         if form.is_valid():
             name = form.cleaned_data['name']
             description = form.cleaned_data['description']
-            new_list = List.objects.create(name=name, description=description)
+            user: CustomUser = request.user
+            new_list = List.objects.create(name=name, description=description, owner=user)
             new_list.tasks.set(form.cleaned_data['tasks'])
             new_list.save()
-            user: CustomUser = request.user
-            user.lists.add(new_list)
             return redirect('todolist:index')
 
     elif request.method == 'GET':
@@ -69,7 +68,7 @@ def list_create(request):
 def list_edit(request, list_id):
     user: CustomUser = request.user
     current_list = get_object_or_404(List, id=list_id)
-    if user.lists.contains(current_list):
+    if user.list_set.contains(current_list):
         if request.method == 'POST':
             form = ListForm(request.POST)
 
