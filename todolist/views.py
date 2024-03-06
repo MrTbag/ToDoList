@@ -1,25 +1,37 @@
 import re
+import io
 
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from rest_framework import permissions, viewsets, generics, authentication
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.parsers import JSONParser
 
-from .models import List, Task, CustomUser, IntermediaryListTask
+from .models import List, Task, CustomUser
 from .forms import ListForm, TaskForm, TaskImportForm
+from .serializers import ListSerializer, TaskSerializer
 
 from url_shortener.models import UrlDict
 
 
-def index(request):
-    if request.method == 'GET':
-        user: CustomUser = request.user
-        lists = user.list_set.all()
-        context = {
-            'lists': lists,
-            'user': request.user.username
-        }
-        return render(request, 'todolist/index.html', context)
+class ListView(APIView):
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser]
 
-    return render(request, 'todolist/wrong_method.html')
+    def get(self, request, format=None, *args, **kwargs):
+        lists = List.objects.filter(owner=request.user)
+        serializer = ListSerializer(lists, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None, *args, **kwargs):
+        data = request.data
+
+        serializer = ListSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+
+        return Response(data)
 
 
 def list_detail(request, list_id):
