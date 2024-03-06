@@ -35,14 +35,16 @@ def list_detail(request, list_id):
 
 
 def list_delete(request, list_id):
-    user: CustomUser = request.user
-    del_list = get_object_or_404(List, id=list_id)
-    if user.list_set.contains(del_list):
-        name = del_list.name
-        del_list.delete()
-        return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
-    else:
-        return render(request, 'todolist/access_denied.html')
+    if request.method == 'POST':
+        user: CustomUser = request.user
+        del_list = get_object_or_404(List, id=list_id)
+        if user.list_set.contains(del_list):
+            name = del_list.name
+            del_list.delete()
+            return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
+        else:
+            return render(request, 'todolist/access_denied.html')
+    return render(request, 'todolist/wrong_method.html')
 
 
 def list_create(request):
@@ -101,10 +103,12 @@ def task_detail(request, task_id):
 
 
 def task_delete(request, task_id):
-    task = get_object_or_404(Task, pk=task_id)
-    name = task.name
-    task.delete()
-    return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'task'})
+    if request.method == 'POST':
+        task = get_object_or_404(Task, pk=task_id)
+        name = task.name
+        task.delete()
+        return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'task'})
+    return render(request, 'todolist/wrong_method.html')
 
 
 def task_create(request):

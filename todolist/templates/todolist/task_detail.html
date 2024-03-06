@@ -14,7 +14,12 @@
      {% if task.image %}
         <li> <img alt="" src={{ task.image.url }}> </li>
      {% endif %}
-     <li><a href="{% url 'todolist:task_delete' task.id %}"> Delete the Task!</a></li>
+     <li>
+         <form action="{% url 'todolist:task_delete' task.id %}" method="post">
+         {% csrf_token %}
+         <input type="submit" value="Delete">
+         </form>
+     </li>
      <li><a href="{% url 'todolist:task_edit' task.id %}"> Edit the Task!</a></li>
      <li><a href="{% url 'todolist:task_export' task.id %}"> Share the Task!</a></li>
  </ul>

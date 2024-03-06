@@ -12,7 +12,12 @@
     <li><p>Date Published: {{ list.pub_date }}</p></li>
 </ul>
 
-<a href="{% url 'todolist:list_delete'  list.id %}"> Delete this list</a><br>
+
+<form action="{% url 'todolist:list_delete' list.id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Delete">
+</form>
+
 <a href="{% url 'todolist:list_edit'  list.id %}"> Edit this list</a><br>
 <a href="{% url 'todolist:task_import'  list.id %}"> Import another user's task into this list</a><br>
 <a href="{% url 'todolist:index' %}"> Return to the dashboard</a>
