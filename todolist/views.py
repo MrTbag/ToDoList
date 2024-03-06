@@ -3,7 +3,7 @@ import re
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .models import List, Task, CustomUser
+from .models import List, Task, CustomUser, IntermediaryListTask
 from .forms import ListForm, TaskForm, TaskImportForm
 
 from url_shortener.models import UrlDict
@@ -75,11 +75,10 @@ def list_edit(request, list_id):
             form = ListForm(request.POST)
 
             if form.is_valid():
-                same_list = get_object_or_404(List, id=list_id)
-                same_list.name = form.cleaned_data['name']
-                same_list.description = form.cleaned_data['description']
-                same_list.tasks.set(form.cleaned_data['tasks'])
-                same_list.save()
+                current_list.name = form.cleaned_data['name']
+                current_list.description = form.cleaned_data['description']
+                current_list.tasks.set(form.cleaned_data['tasks'])
+                current_list.save()
                 return redirect('todolist:list_detail', list_id=list_id)
 
         elif request.method == 'GET':
@@ -123,8 +122,9 @@ def task_create(request):
             file = request.FILES.get('file', None)
             image = request.FILES.get('image', None)
             task = Task(name=name, deadline=deadline, importance=importance, file=file,
-                        image=image, done=done)
+                        image=image, done=done, creator=request.user)
             task.save()
+
             return render(request, 'todolist/create_successful.html')
 
     elif request.method == 'GET':

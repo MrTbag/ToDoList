@@ -2,10 +2,17 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
+class CustomUser(AbstractUser):
+
+    def __str__(self):
+        return self.username
+
+
 class Task(models.Model):
     name = models.CharField(max_length=50)
+    creator = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
     done = models.BooleanField(default=False)
-    importance = models.IntegerField()
+    importance = models.PositiveSmallIntegerField()
     date_added = models.DateTimeField('date added', auto_now_add=True)
     deadline = models.DateField('deadline')
     file = models.FileField(null=True, blank=True)
@@ -18,12 +25,6 @@ class Task(models.Model):
         return self.name
 
 
-class CustomUser(AbstractUser):
-
-    def __str__(self):
-        return self.username
-
-
 class List(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
@@ -33,3 +34,8 @@ class List(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class IntermediaryListTask(models.Model):
+    List = models.ForeignKey(List, on_delete=models.CASCADE, default=None, null=True)
+    Task = models.ForeignKey(Task, on_delete=models.CASCADE, default=None, null=True)
