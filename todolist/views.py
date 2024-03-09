@@ -5,9 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from rest_framework import permissions, viewsets, generics, authentication, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
 
 from .models import List, Task, CustomUser
 from .forms import ListForm, TaskForm, TaskImportForm
@@ -22,7 +20,7 @@ def todolist_list(request, format=None):
         user: CustomUser = request.user
         lists = user.list_set.all()
         serializer = ListSerializer(lists, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
         serializer = ListSerializer(data=request.data)
@@ -42,9 +40,9 @@ def todolist_detail(request, list_id, format=None):
 
         if current_list.owner == user:
             serializer = ListSerializer(current_list)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response("You do not have permission to access this data.", status=status.HTTP_403_FORBIDDEN)
+            return Response("You do not have permission to access this todolist.", status=status.HTTP_403_FORBIDDEN)
 
     elif request.method == 'PUT':
 
@@ -52,90 +50,84 @@ def todolist_detail(request, list_id, format=None):
             serializer = ListSerializer(current_list, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("You do not have permission to edit this todolist.", status=status.HTTP_403_FORBIDDEN)
 
     elif request.method == 'DELETE':
-        current_list.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if current_list.owner == user:
+            current_list.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("You do not have permission to delete this todolist.", status=status.HTTP_403_FORBIDDEN)
 
 
-def task_detail(request, task_id):
+@api_view(['GET', 'POST'])
+def task_list(request, format=None):
+    user: CustomUser = request.user
     if request.method == 'GET':
-        task = get_object_or_404(Task, pk=task_id)
-        return render(request, 'todolist/task_detail.html', {'task': task})
+        tasks = user.task_set.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    return render(request, 'todolist/wrong_method.html')
-
-
-def task_delete(request, task_id):
-    if request.method == 'POST':
-        task = get_object_or_404(Task, pk=task_id)
-        name = task.name
-        task.delete()
-        return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'task'})
-    return render(request, 'todolist/wrong_method.html')
+    elif request.method == 'POST':
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(creator=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def task_create(request):
-    if request.method == 'POST':
-        form = TaskForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            deadline = form.cleaned_data['deadline']
-            importance = form.cleaned_data['importance']
-            done = form.cleaned_data['done']
-            file = request.FILES.get('file', None)
-            image = request.FILES.get('image', None)
-            task = Task(name=name, deadline=deadline, importance=importance, file=file,
-                        image=image, done=done, creator=request.user)
-            task.save()
-
-            return render(request, 'todolist/create_successful.html')
-
-    elif request.method == 'GET':
-        form = TaskForm()
-        return render(request, "todolist/task_form_create.html", {"form": form})
-
-    return render(request, 'todolist/wrong_method.html')
-
-
-def task_edit(request, task_id):
-    if request.method == 'POST':
-        form = TaskForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            task = get_object_or_404(Task, id=task_id)
-            task.name = form.cleaned_data['name']
-            task.deadline = form.cleaned_data['deadline']
-            task.importance = form.cleaned_data['importance']
-            task.file = request.FILES.get('file', None)
-            task.image = request.FILES.get('image', None)
-            task.done = form.cleaned_data['done']
-            task.save()
-            return redirect('todolist:task_detail', task_id=task_id)
-
-    elif request.method == 'GET':
-        prev_task = get_object_or_404(Task, id=task_id)
-        form = TaskForm({'name': prev_task.name, 'deadline': prev_task.deadline, 'importance': prev_task.importance,
-                         'file': prev_task.file, 'image': prev_task.image, 'done': prev_task.done})
-        return render(request, "todolist/task_form_edit.html", {"form": form, "task_id": task_id})
-
-    return render(request, 'todolist/wrong_method.html')
-
-
-def task_export(request, task_id=None):
+@api_view(['GET', 'PUT', 'DELETE'])
+def task_detail(request, task_id, format=None):
+    task = get_object_or_404(Task, pk=task_id)
+    user: CustomUser = request.user
     if request.method == 'GET':
-        task = get_object_or_404(Task, id=task_id)
-        return render(request, 'todolist/task_export.html', {'url': request.build_absolute_uri(),
-                                                             'task': task})
+        if task.creator == user:
+            serializer = TaskSerializer(task)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response("You do not have permission to access this task.", status=status.HTTP_401_UNAUTHORIZED)
 
-    return render(request, 'todolist/wrong_method.html')
+    elif request.method == 'PUT':
+        if task.creator == user:
+            serializer = TaskSerializer(task, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("You do not have permission to edit this task.", status=status.HTTP_401_UNAUTHORIZED)
+
+    elif request.method == 'DELETE':
+        if task.creator == user:
+            task.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("You do not have permission to delete this task.", status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET'])
+def task_export(request, task_id, format=None):
+    task = get_object_or_404(Task, id=task_id)
+    user: CustomUser = request.user
+
+    if request.method == 'GET':
+        if task.creator == user:
+            url = request.build_absolute_uri()
+            return Response("Shorten this url and share it with others to be able to import this task.\n" +
+                            "URL: " + url + "\n" + "Title: " + task.name, status=status.HTTP_200_OK)
+        else:
+            return Response("You do not have permission to export this task.", status=status.HTTP_401_UNAUTHORIZED)
 
 
 def task_import(request, list_id):
+    current_list = get_object_or_404(List, pk=list_id)
+    user: CustomUser = request.user
     if request.method == 'POST':
         form = TaskImportForm(request.POST)
 
