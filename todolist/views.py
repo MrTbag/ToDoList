@@ -1,15 +1,10 @@
-import re
-import io
-
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
-from rest_framework import permissions, viewsets, generics, authentication, status
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from .models import List, Task, CustomUser
-from .forms import ListForm, TaskForm, TaskImportForm
-from .serializers import ListSerializer, TaskSerializer
+from .serializers import ListSerializer, TaskSerializer, TaskImportSerializer
 
 from url_shortener.models import UrlDict
 
@@ -119,36 +114,39 @@ def task_export(request, task_id, format=None):
     if request.method == 'GET':
         if task.creator == user:
             url = request.build_absolute_uri()
+            task.url = url
             return Response("Shorten this url and share it with others to be able to import this task.\n" +
                             "URL: " + url + "\n" + "Title: " + task.name, status=status.HTTP_200_OK)
         else:
             return Response("You do not have permission to export this task.", status=status.HTTP_401_UNAUTHORIZED)
 
 
-def task_import(request, list_id):
+@api_view(['POST'])
+def task_import(request, list_id, format=None):
     current_list = get_object_or_404(List, pk=list_id)
     user: CustomUser = request.user
+
     if request.method == 'POST':
-        form = TaskImportForm(request.POST)
+        if current_list.owner == user:
+            serializer = TaskImportSerializer(data=request.data)
+            if serializer.is_valid():
+                url = serializer.validated_data['url']
 
-        if form.is_valid():
-            url = form.cleaned_data['task_link']
-            if UrlDict.objects.filter(key=url).exists():
-                original_url = str(UrlDict.objects.get(key=url).original_url)
-                matching_url_regex = ('^http://' + request.get_host() + '/' + request.resolver_match.app_name +
-                                      '/tasks/' + '(?P<task_id>\\d+)/export/$')
-                print(request.resolver_match.app_name)
-                p = re.compile(matching_url_regex)
-                if p.match(original_url):
-                    task_id = int(p.search(original_url).group('task_id'))
-                    task = get_object_or_404(Task, pk=task_id)
-                    get_object_or_404(List, id=list_id).tasks.add(task)
-                    return redirect('todolist:list_detail', list_id=list_id)
+                if not UrlDict.objects.filter(key=url).exists():
+                    return Response("Invalid URL", status=status.HTTP_404_NOT_FOUND)
 
-            return HttpResponse("Invalid URL")
+                original_url = get_object_or_404(UrlDict, key=url).original_url
+                task = get_object_or_404(Task, url=original_url)
 
-    elif request.method == 'GET':
-        form = TaskImportForm()
-        return render(request, 'todolist/task_import.html', {'list_id': list_id, 'form': form})
+                if not current_list.tasks.contains(task):
+                    current_list.tasks.add(task)
+                    return Response("Task '" + task.name + "' was imported to list '" + current_list.name + "'",
+                                    status=status.HTTP_201_CREATED)
+                else:
+                    return Response("You already have this task in this list", status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("You do not have permission to import this task onto this list.",
+                            status=status.HTTP_401_UNAUTHORIZED)
 
-    return render(request, 'todolist/wrong_method.html')

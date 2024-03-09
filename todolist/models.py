@@ -15,6 +15,7 @@ class Task(models.Model):
     importance = models.PositiveSmallIntegerField()
     date_added = models.DateTimeField('date added', auto_now_add=True)
     deadline = models.DateField('deadline')
+    url = models.URLField(default=None, blank=True, null=True)
     file = models.FileField(null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
 

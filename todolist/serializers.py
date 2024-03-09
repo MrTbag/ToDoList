@@ -18,3 +18,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = '__all__'
+
+
+class TaskImportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['url']
