@@ -3,9 +3,10 @@ import io
 
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from rest_framework import permissions, viewsets, generics, authentication
+from rest_framework import permissions, viewsets, generics, authentication, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 
 from .models import List, Task, CustomUser
@@ -15,94 +16,49 @@ from .serializers import ListSerializer, TaskSerializer
 from url_shortener.models import UrlDict
 
 
-class ListView(APIView):
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAdminUser]
-
-    def get(self, request, format=None, *args, **kwargs):
-        lists = List.objects.filter(owner=request.user)
+@api_view(['GET', 'POST'])
+def todolist_list(request, format=None):
+    if request.method == 'GET':
+        user: CustomUser = request.user
+        lists = user.list_set.all()
         serializer = ListSerializer(lists, many=True)
         return Response(serializer.data)
 
-    def post(self, request, format=None, *args, **kwargs):
-        data = request.data
-
-        serializer = ListSerializer(data=data)
+    elif request.method == 'POST':
+        serializer = ListSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-
-        return Response(data)
-
-
-def list_detail(request, list_id):
-    if request.method == 'GET':
-        current_list = get_object_or_404(List, id=list_id)
-        user: CustomUser = request.user
-        if user.list_set.contains(current_list):
-            return render(request, 'todolist/list_detail.html', {'list': current_list})
+            serializer.save(owner=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return render(request, 'todolist/access_denied.html')
-
-    return render(request, 'todolist/wrong_method.html')
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def list_delete(request, list_id):
-    if request.method == 'POST':
-        user: CustomUser = request.user
-        del_list = get_object_or_404(List, id=list_id)
-        if user.list_set.contains(del_list):
-            name = del_list.name
-            del_list.delete()
-            return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
-        else:
-            return render(request, 'todolist/access_denied.html')
-    return render(request, 'todolist/wrong_method.html')
-
-
-def list_create(request):
-    if request.method == 'POST':
-        form = ListForm(request.POST)
-
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            description = form.cleaned_data['description']
-            user: CustomUser = request.user
-            new_list = List.objects.create(name=name, description=description, owner=user)
-            new_list.tasks.set(form.cleaned_data['tasks'])
-            new_list.save()
-            return redirect('todolist:index')
-
-    elif request.method == 'GET':
-        form = ListForm()
-        return render(request, "todolist/list_form_create.html", {"form": form})
-
-    return render(request, 'todolist/wrong_method.html')
-
-
-def list_edit(request, list_id):
-    user: CustomUser = request.user
+@api_view(['GET', 'PUT', 'DELETE'])
+def todolist_detail(request, list_id, format=None):
     current_list = get_object_or_404(List, id=list_id)
-    if user.list_set.contains(current_list):
-        if request.method == 'POST':
-            form = ListForm(request.POST)
+    user: CustomUser = request.user
 
-            if form.is_valid():
-                current_list.name = form.cleaned_data['name']
-                current_list.description = form.cleaned_data['description']
-                current_list.tasks.set(form.cleaned_data['tasks'])
-                current_list.save()
-                return redirect('todolist:list_detail', list_id=list_id)
+    if request.method == 'GET':
 
-        elif request.method == 'GET':
-            prev_list = get_object_or_404(List, id=list_id)
-            form = ListForm(
-                {'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks.all()})
-            return render(request, 'todolist/list_form_edit.html', {"form": form, "list_id": list_id})
+        if current_list.owner == user:
+            serializer = ListSerializer(current_list)
+            return Response(serializer.data)
+        else:
+            return Response("You do not have permission to access this data.", status=status.HTTP_403_FORBIDDEN)
 
-        return render(request, 'todolist/wrong_method.html')
+    elif request.method == 'PUT':
 
-    else:
-        return render(request, 'todolist/access_denied.html')
+        if current_list.owner == user:
+            serializer = ListSerializer(current_list, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        current_list.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 def task_detail(request, task_id):
