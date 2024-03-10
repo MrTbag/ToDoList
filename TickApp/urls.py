@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('todolist/', include('todolist.urls')),
+    path('todolist/v2/', include('todolist.v2.urls')),
     path('admin/', admin.site.urls),
 ]
 

@@ -2,6 +2,7 @@ from django.db import models
 from todolist.models import Task
 from todolist.models import CustomUser
 
+
 class List(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)

@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from todolist.models import CustomUser, List
+from todolist.models import CustomUser, List, Task
 from todolist.serializers import TaskImportSerializer
 
 from url_shortener.models import UrlDict
