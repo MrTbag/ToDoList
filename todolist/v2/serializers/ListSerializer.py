@@ -1,7 +1,5 @@
 from todolist.models import List
 from rest_framework import serializers
-from todolist.models import Task
-from django.shortcuts import get_object_or_404
 
 
 class ListSerializer(serializers.ModelSerializer):
@@ -15,4 +13,3 @@ class ListSerializer(serializers.ModelSerializer):
                                            owner=self.context['request'].user)
         current_list.tasks.set(validated_data['tasks'])
         return current_list
-

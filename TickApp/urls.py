@@ -21,8 +21,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('todolist/', include('todolist.urls')),
-    path('todolist/v2/', include('todolist.v2.urls')),
+    path('todolist/', include('todolist.urls', namespace='todolist')),
+    path('todolist/v2/', include('todolist.v2.urls', namespace='todolist-v2')),
+    path('shorturl/', include('url_shortener.urls', namespace='url_shortener')),
     path('admin/', admin.site.urls),
 ]
 

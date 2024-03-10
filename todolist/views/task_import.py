@@ -18,9 +18,11 @@ def task_import(request, list_id, format=None):
 
     if request.method == 'POST':
         if current_list.owner == user:
+            print(user.username)
             serializer = TaskImportSerializer(data=request.data)
             if serializer.is_valid():
                 url = serializer.validated_data['url']
+                print(url)
 
                 if not UrlDict.objects.filter(key=url).exists():
                     return Response("Invalid URL", status=status.HTTP_404_NOT_FOUND)

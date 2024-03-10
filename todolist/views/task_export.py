@@ -17,6 +17,7 @@ def task_export(request, task_id, format=None):
         if task.creator == user:
             url = request.build_absolute_uri()
             task.url = url
+            task.save()
             return Response("Shorten this url and share it with others to be able to import this task.\n" +
                             "URL: " + url + "\n" + "Title: " + task.name, status=status.HTTP_200_OK)
         else:
