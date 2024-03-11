@@ -13,3 +13,9 @@ class ListSerializer(serializers.ModelSerializer):
                                            owner=self.context['request'].user)
         current_list.tasks.set(validated_data['tasks'])
         return current_list
+
+    def validate_tasks(self, value):
+        for task in value:
+            if task.creator != self.context['request'].user:
+                raise serializers.ValidationError("You do not have permission to add tasks you do not own")
+        return value
