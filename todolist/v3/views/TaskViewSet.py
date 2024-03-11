@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from todolist.models import CustomUser, Task
 
-from todolist.v2.serializers import TaskSerializer
+from todolist.v3.serializers import TaskSerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
