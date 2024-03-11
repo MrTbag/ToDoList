@@ -10,3 +10,10 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
+    def check_object_permissions(self, request, obj):
+        for permission in self.get_permissions():
+            if not request.user == obj.creator:
+                self.permission_denied(
+                    request,
+                    message="You do not have permission to view this task",
+                )
