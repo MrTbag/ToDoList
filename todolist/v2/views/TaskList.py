@@ -18,3 +18,6 @@ class TaskList(ListCreateAPIView):
         context = super().get_serializer_context()
         context["user"] = self.request.user
         return context
+
+    # TODO perform create instead of serializer editing
+

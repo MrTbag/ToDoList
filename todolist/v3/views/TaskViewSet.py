@@ -20,8 +20,11 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context ["user"] = self.request.user
+        context["user"] = self.request.user
         return context
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
     @action(detail=True, methods=['get'])
     def export(self, request, pk=None):
