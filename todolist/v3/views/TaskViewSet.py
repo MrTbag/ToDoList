@@ -18,6 +18,11 @@ class TaskViewSet(viewsets.ModelViewSet):
         user: CustomUser = self.request.user
         return user.task_set.all()
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context ["user"] = self.request.user
+        return context
+
     @action(detail=True, methods=['get'])
     def export(self, request, pk=None):
         task: Task = self.get_object()
@@ -26,4 +31,5 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.save()
         return Response("Shorten this url and share it with others to be able to import this task.\n " +
                         "URL: " + url + " \n" + "Title: " + task.name, status=status.HTTP_200_OK)
+
 
