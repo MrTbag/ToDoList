@@ -1,2 +1,2 @@
-from .TodolistViewSet import TodolistViewSet
-from .TaskViewSet import TaskViewSet
+from .todolist_view_set import TodolistViewSet
+from .task_view_set import TaskViewSet

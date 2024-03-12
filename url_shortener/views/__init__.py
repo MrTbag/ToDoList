@@ -1,1 +1,1 @@
-from .Shorten import Shorten
+from .shorten import Shorten

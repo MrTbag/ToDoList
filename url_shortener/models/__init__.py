@@ -1,1 +1,1 @@
-from .UrlDict import UrlDict
+from .url_dict import UrlDict
