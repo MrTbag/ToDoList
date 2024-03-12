@@ -2,8 +2,6 @@ from django.contrib import admin
 from todolist.models import List, Task
 
 
-# TODO each admin class in its own file
-
 class TaskInline(admin.TabularInline):
     model = List.tasks.through
     extra = 2
@@ -28,16 +26,4 @@ class ListAdmin(admin.ModelAdmin):
         return result
 
 
-class TaskAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields': ['name']}),
-        (None, {'fields': ['importance']}),
-    ]
-
-    list_display = ['name', 'date_added', 'creator', 'done']
-
-    list_filter = ['date_added', 'deadline']
-
-
-admin.site.register(Task, TaskAdmin)
-admin.site.register(List, ListAdmin)
+admin.register(List, ListAdmin)
