@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -31,7 +32,18 @@ class TodolistViewSet(ModelViewSet):
         return context
 
     def perform_create(self, serializer):
+        tasks = serializer.validated_data['tasks']
+        for task in tasks:
+            if task.creator != self.request.user:
+                raise PermissionDenied
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        tasks = serializer.validated_data['tasks']
+        for task in tasks:
+            if task.creator != self.request.user and not self.get_object().tasks.filter(id=task.id).exists():
+                raise PermissionDenied
+        serializer.save()
 
     @action(detail=True, methods=['post'])
     def import_task(self, request, pk=None):
