@@ -3,8 +3,7 @@ from todolist.models import Task
 from todolist.models import CustomUser
 
 
-# TODO change name
-class List(models.Model):
+class TodoList(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
     pub_date = models.DateTimeField('date created', auto_now_add=True)

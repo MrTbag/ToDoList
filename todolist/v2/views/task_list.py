@@ -20,5 +20,3 @@ class TaskList(ListCreateAPIView):
         context['request'] = self.request
         return context
 
-    # TODO perform create instead of serializer editing
-

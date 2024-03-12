@@ -1,13 +1,13 @@
 from django.contrib import admin
-from todolist.models import List, Task
+from todolist.models import TodoList, Task
 
 
 class TaskInline(admin.TabularInline):
-    model = List.tasks.through
+    model = TodoList.tasks.through
     extra = 2
 
 
-class ListAdmin(admin.ModelAdmin):
+class TodoListAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['name']}),
         ('Description', {'fields': ['description'], 'classes': ['collapse']}),
@@ -26,4 +26,4 @@ class ListAdmin(admin.ModelAdmin):
         return result
 
 
-admin.register(List, ListAdmin)
+admin.register(TodoList, TodoListAdmin)

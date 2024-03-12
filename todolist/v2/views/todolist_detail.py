@@ -1,13 +1,13 @@
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from todolist.models import List
-from todolist.v2.serializers import ListSerializer
+from todolist.models import TodoList
+from todolist.v2.serializers import TodoListSerializer
 
 
 class TodolistDetail(RetrieveUpdateDestroyAPIView):
-    queryset = List.objects.all()
-    serializer_class = ListSerializer
+    queryset = TodoList.objects.all()
+    serializer_class = TodoListSerializer
     permission_classes = [IsAuthenticated]
 
     def check_object_permissions(self, request, obj):

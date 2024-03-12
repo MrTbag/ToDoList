@@ -1,12 +1,11 @@
-from todolist.models import List
+from todolist.models import TodoList
 from rest_framework import serializers
 
 
-class ListSerializer(serializers.ModelSerializer):
+class TodoListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = List
-        fields = ['id', 'name', 'description', 'owner', 'pub_date', 'tasks']
-        read_only_fields = ['owner']
+        model = TodoList
+        fields = '__all__'
 
     def validate_tasks(self, value):
         for task in value:

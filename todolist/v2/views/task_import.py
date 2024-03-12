@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from rest_framework.views import APIView
 
-from todolist.models import List, Task
+from todolist.models import TodoList, Task
 from todolist.serializers import TaskImportSerializer
 from url_shortener.models import UrlDict
 
@@ -15,7 +15,7 @@ class TaskImport(APIView):
 
     @staticmethod
     def post(request, pk, format=None):
-        current_list = get_object_or_404(List, pk=pk)
+        todolist = get_object_or_404(TodoList, pk=pk)
         serializer = TaskImportSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -27,9 +27,9 @@ class TaskImport(APIView):
             original_url = get_object_or_404(UrlDict, key=url).original_url
             task = get_object_or_404(Task, url=original_url)
 
-            if not current_list.tasks.contains(task):
-                current_list.tasks.add(task)
-                return Response("Task '" + task.name + "' was imported to list '" + current_list.name + "'",
+            if not todolist.tasks.contains(task):
+                todolist.tasks.add(task)
+                return Response("Task '" + task.name + "' was imported to list '" + todolist.name + "'",
                                 status=status.HTTP_201_CREATED)
             else:
                 return Response("You already have this task in this list", status=status.HTTP_400_BAD_REQUEST)

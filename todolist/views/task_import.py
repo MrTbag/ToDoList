@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from todolist.models import CustomUser, List, Task
+from todolist.models import CustomUser, TodoList, Task
 from todolist.serializers import TaskImportSerializer
 
 from url_shortener.models import UrlDict
@@ -13,7 +13,7 @@ from url_shortener.models import UrlDict
 
 @api_view(['POST'])
 def task_import(request, list_id, format=None):
-    current_list = get_object_or_404(List, pk=list_id)
+    current_list = get_object_or_404(TodoList, pk=list_id)
     user: CustomUser = request.user
 
     if request.method == 'POST':

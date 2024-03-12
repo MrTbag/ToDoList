@@ -6,9 +6,9 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 
 from todolist.serializers import TaskImportSerializer
-from todolist.v3.serializers import ListSerializer
+from todolist.v3.serializers import TodoListSerializer
 
-from todolist.models import CustomUser, Task, List
+from todolist.models import CustomUser, Task, TodoList
 from url_shortener.models import UrlDict
 
 
@@ -19,11 +19,11 @@ class TodolistViewSet(ModelViewSet):
         if self.action == 'import_task':
             return TaskImportSerializer
         else:
-            return ListSerializer
+            return TodoListSerializer
 
     def get_queryset(self):
         user: CustomUser = self.request.user
-        return user.list_set.all()
+        return user.todolist_set.all()
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -35,7 +35,7 @@ class TodolistViewSet(ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def import_task(self, request, pk=None):
-        current_list = get_object_or_404(List, pk=pk)
+        current_list = get_object_or_404(TodoList, pk=pk)
         serializer = TaskImportSerializer(data=request.data)
 
         if serializer.is_valid():
