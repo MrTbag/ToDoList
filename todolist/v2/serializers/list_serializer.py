@@ -1,26 +1,8 @@
-from todolist.models import List, CustomUser
-from todolist.models import Task
+from todolist.models import List
 from rest_framework import serializers
 
 
-class TaskListingField(serializers.RelatedField):
-    class Meta:
-        model = Task
-
-    def get_queryset(self):
-        user: CustomUser = self.context['request'].user
-        return user.task_set.all()
-
-    def to_representation(self, value):
-        if isinstance(value, Task):
-            return value.name
-        else:
-            raise Exception("This type of object is not supported")
-
-
 class ListSerializer(serializers.ModelSerializer):
-    tasks = TaskListingField(many=True)
-
     class Meta:
         model = List
         fields = ['id', 'name', 'description', 'owner', 'pub_date', 'tasks']

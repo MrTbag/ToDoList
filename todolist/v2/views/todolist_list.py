@@ -1,6 +1,5 @@
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 from todolist.models import List, CustomUser
 from todolist.v2.serializers import ListSerializer
