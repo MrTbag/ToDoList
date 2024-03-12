@@ -10,6 +10,6 @@ class TodoListSerializer(serializers.ModelSerializer):
 
     def validate_tasks(self, value):
         for task in value:
-            if task.creator != self.context['request'].user:
+            if task.creator != self.context['user']:
                 raise serializers.ValidationError("You do not have permission to add tasks you do not own")
         return value

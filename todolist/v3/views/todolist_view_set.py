@@ -27,7 +27,7 @@ class TodolistViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['request'] = self.request
+        context['user'] = self.request.user
         return context
 
     def perform_create(self, serializer):
