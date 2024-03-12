@@ -2,6 +2,8 @@ from django.contrib import admin
 from todolist.models import List, Task
 
 
+# TODO each admin class in its own file
+
 class TaskInline(admin.TabularInline):
     model = List.tasks.through
     extra = 2

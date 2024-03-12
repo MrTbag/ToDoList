@@ -14,6 +14,7 @@ from url_shortener.models import UrlDict
 
 class TodolistViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
+    # TODO what was the warning. Search about limit offset
     pagination_class = None
 
     def get_serializer_class(self):

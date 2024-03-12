@@ -5,6 +5,8 @@ from . import views
 
 app_name = 'todolist'
 
+# TODO should url names be PascalCase or underscore_case?
+
 urlpatterns = [
     path('lists/', views.todolist_list, name='todolist_list'),
     path('lists/<int:list_id>/', views.todolist_detail, name='todolist_detail'),
