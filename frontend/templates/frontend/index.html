@@ -1,22 +1,13 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    
-    
-</head>
-<body>
-    <button id="btn"> Get todolists </button>
-    
-    <ul>    
-        
+<h1>{{ user }}'s to-do lists</h1>
+{% if lists %}
+    <ul>
+    {% for li in lists %}
+        <li><a href="{% url 'todolist:list_detail' li.id %}">{{ li.name }}</a></li>
+    {% endfor %}
     </ul>
+{% else %}
+    <p>No to-do lists are available.</p>
+{% endif %}
 
-    
-    <script src=”https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js”></script>
-    <script src="{% static 'frontend/js/todolists.lists.js' %}"></script>
-    
-</body>
-</html>
+<a href="{% url 'todolist:list_create' %}">Create a new to-do list</a><br>
+<a href="{% url 'todolist:task_create' %}"> Create a new task!</a><br>
