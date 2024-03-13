@@ -44,7 +44,7 @@ ROOT_URLCONF = 'TickApp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,6 +84,10 @@ REST_FRAMEWORK = {
     ),
 }
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'GMT'
@@ -92,8 +96,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
