@@ -22,7 +22,7 @@ class IndexView(View):
 
 def list_detail(request, list_id):
     if request.method == 'GET':
-        current_list = get_object_or_404(List, id=list_id)
+        current_list = get_object_or_404(TodoList, id=list_id)
         user: CustomUser = request.user
         if user.list_set.contains(current_list):
             return render(request, 'todolist/list_detail.html', {'list': current_list})
