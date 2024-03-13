@@ -1,0 +1,13 @@
+<h1>{{ user }}'s to-do lists</h1>
+{% if lists %}
+    <ul>
+    {% for li in lists %}
+        <li><a href="{% url 'todolist:list_detail' li.id %}">{{ li.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No to-do lists are available.</p>
+{% endif %}
+
+<a href="{% url 'todolist:list_create' %}">Create a new to-do list</a><br>
+<a href="{% url 'todolist:task_create' %}"> Create a new task!</a><br>
