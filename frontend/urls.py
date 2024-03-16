@@ -5,5 +5,5 @@ app_name = 'frontend'
 
 urlpatterns = [
     path('index/', views.IndexView.as_view(), name='index'),
-    path('', views.list_detail, name='list_detail'),
+    path('todolists/<int:list_id>', views.list_detail, name='list_detail'),
 ]

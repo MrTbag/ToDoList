@@ -24,12 +24,12 @@ def list_detail(request, list_id):
     if request.method == 'GET':
         current_list = get_object_or_404(TodoList, id=list_id)
         user: CustomUser = request.user
-        if user.list_set.contains(current_list):
-            return render(request, 'todolist/list_detail.html', {'list': current_list})
+        if user.todolist_set.contains(current_list):
+            return render(request, 'frontend/list_detail.html', {'list': current_list})
         else:
-            return render(request, 'todolist/access_denied.html')
+            return render(request, 'frontend/access_denied.html')
 
-    return render(request, 'todolist/wrong_method.html')
+    return render(request, 'frontend/wrong_method.html')
 
 
 def list_delete(request, list_id):
