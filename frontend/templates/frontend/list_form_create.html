@@ -1,5 +1,10 @@
-<form action="{% url 'todolist:list_create' %}" method="post">
-{% csrf_token %}
-{{ form }}
-<input type="submit" value="Submit">
-</form>
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+    
+    {{ form }}
+    <button id="submit">Submit</button>
+
+    <script src="{% static 'frontend/js/todolist.lists.js' %}"></script>
+
+{% endblock %}

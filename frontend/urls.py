@@ -4,6 +4,9 @@ from frontend import views
 app_name = 'frontend'
 
 urlpatterns = [
-    path('index/', views.IndexView.as_view(), name='index'),
-    path('todolists/<int:list_id>', views.list_detail, name='list_detail'),
+    path('todolists/', views.IndexView.as_view(), name='index'),
+    path('todolists/create/', views.list_create, name='list_create'),
+    path('todolists/created-successfully/', views.created_successfully, name='successful'),
+    path('todolists/<int:list_id>/', views.list_detail, name='list_detail'),
+    path('tasks/<int:task_id>/', views.task_detail, name='task_detail'),
 ]

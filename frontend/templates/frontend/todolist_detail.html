@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+    <h1>{{ list }}</h1>
+    <h3>Tasks: </h3>
+    <ul>
+        {% for task in list.tasks.all %}
+            <li><a href="{% url 'frontend:task_detail' task.id %}">{{ task.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <div id="todolist" data-id="{{ list.id }}" data-description="{{ list.description }}" data-pubdate="{{ list.pub_date }}"></div>
+
+    <div id="details">
+
+    </div>
+
+    <button id="detail-btn">More Details</button><br>
+
+    <button id="delete-btn">Delete</button><br>
+    <a id="delete-response"></a><br>
+    
+    <button id="edit-btn">Edit</button><br>
+    
+    <a href="{% url 'frontend:index' %}"> Return to the dashboard</a>
+    
+    
+    <script src="{% static 'frontend/js/todolist.detail.js' %}">
+    </script>
+{% endblock %}
+

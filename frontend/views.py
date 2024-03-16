@@ -1,5 +1,7 @@
+import json
 import re
 
+from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import View
@@ -7,6 +9,7 @@ from django.views.generic import View
 from url_shortener.models import UrlDict
 
 from todolist.models import CustomUser, TodoList
+from frontend.forms import TodolistForm
 
 
 class IndexView(View):
@@ -17,7 +20,7 @@ class IndexView(View):
             'lists': lists,
             'user': request.user.username
         }
-        return render(request, 'frontend/index.html', context)
+        return render(request, 'frontend/todolist_list.html', context)
 
 
 def list_detail(request, list_id):
@@ -25,44 +28,26 @@ def list_detail(request, list_id):
         current_list = get_object_or_404(TodoList, id=list_id)
         user: CustomUser = request.user
         if user.todolist_set.contains(current_list):
-            return render(request, 'frontend/list_detail.html', {'list': current_list})
+            return render(request, 'frontend/todolist_detail.html', {'list': current_list})
         else:
             return render(request, 'frontend/access_denied.html')
 
     return render(request, 'frontend/wrong_method.html')
 
 
-def list_delete(request, list_id):
-    if request.method == 'POST':
-        user: CustomUser = request.user
-        del_list = get_object_or_404(List, id=list_id)
-        if user.list_set.contains(del_list):
-            name = del_list.name
-            del_list.delete()
-            return render(request, 'todolist/delete_successful.html', {'name': name, 'item': 'list'})
-        else:
-            return render(request, 'todolist/access_denied.html')
-    return render(request, 'todolist/wrong_method.html')
-
-
 def list_create(request):
-    if request.method == 'POST':
-        form = ListForm(request.POST)
+    if request.method == 'GET':
+        form = TodolistForm
+        return render(request, "frontend/list_form_create.html", {"form": form})
 
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            description = form.cleaned_data['description']
-            user: CustomUser = request.user
-            new_list = List.objects.create(name=name, description=description, owner=user)
-            new_list.tasks.set(form.cleaned_data['tasks'])
-            new_list.save()
-            return redirect('todolist:index')
+    return render(request, 'frontend/wrong_method.html')
 
-    elif request.method == 'GET':
-        form = ListForm()
-        return render(request, "todolist/list_form_create.html", {"form": form})
 
-    return render(request, 'todolist/wrong_method.html')
+def created_successfully(request):
+    if request.method == 'GET':
+        return render(request, 'frontend/create_successful.html')
+
+    return render(request, 'frontend/wrong_method.html')
 
 
 def list_edit(request, list_id):

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+    <h2>{{ user }}'s todo lists</h2>
+    <ul id="lists">
+    
+    </ul>
+
+    <button id="btn" >Get Lists</button><br>
+    
+    <a href="{% url 'frontend:list_create' %}">Create a new list</a>
+    
+    <script src="{% static 'frontend/js/todolist.lists.js' %}"></script>
+    
+{% endblock %}
+
