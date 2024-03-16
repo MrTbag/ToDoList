@@ -22,21 +22,25 @@ $(document).ready(function (){
     });
 
     $("#submit").click(function(){
+        const data = {'name': $("#id_name").val(),
+                            'description': $("#id_description").val(),
+                            'tasks': $("#id_tasks").val()
+        };
+        console.log(data);
+
         $.ajax({
             type: 'POST',
             url: api_url,
+            dataType: 'json',
+            contentType: 'application/json',
             headers: {
-                    'X-CSRFToken': getCookie('csrftoken')
+                    'X-CSRFToken': getCookie('csrftoken'),
             },
-            data: {
-                "name": $("#id_name").val(),
-                "description": $("#id_description").val(),
-                "tasks": $("#id_tasks").val(),
-            },
+            data: JSON.stringify(data),
             success: function(response){
-                setTimeout(() => {
-                    window.location.replace("http://127.0.0.1:8000/todolists/created-successfully/");
-                }, 100);
+                setTimeout(()=>{
+                    window.location.replace('http://127.0.0.1:8000/todolists/')
+                })
             }
         });
     });

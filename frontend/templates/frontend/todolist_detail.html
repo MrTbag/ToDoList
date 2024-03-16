@@ -20,7 +20,7 @@
     <button id="delete-btn">Delete</button><br>
     <a id="delete-response"></a><br>
     
-    <button id="edit-btn">Edit</button><br>
+    <a href="{% url 'frontend:list_edit' list.id %}">Edit this list</a>
     
     <a href="{% url 'frontend:index' %}"> Return to the dashboard</a>
     

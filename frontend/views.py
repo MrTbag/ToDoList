@@ -51,29 +51,14 @@ def created_successfully(request):
 
 
 def list_edit(request, list_id):
-    user: CustomUser = request.user
-    current_list = get_object_or_404(List, id=list_id)
-    if user.list_set.contains(current_list):
-        if request.method == 'POST':
-            form = ListForm(request.POST)
+    if request.method == 'GET':
+        prev_list = get_object_or_404(TodoList, id=list_id)
+        form = TodolistForm(
+            {'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks.all()})
+        return render(request, 'frontend/list_form_edit.html', {"form": form, "list_id": list_id})
 
-            if form.is_valid():
-                current_list.name = form.cleaned_data['name']
-                current_list.description = form.cleaned_data['description']
-                current_list.tasks.set(form.cleaned_data['tasks'])
-                current_list.save()
-                return redirect('todolist:list_detail', list_id=list_id)
+    return render(request, 'frontend/wrong_method.html')
 
-        elif request.method == 'GET':
-            prev_list = get_object_or_404(List, id=list_id)
-            form = ListForm(
-                {'name': prev_list.name, 'description': prev_list.description, 'tasks': prev_list.tasks.all()})
-            return render(request, 'todolist/list_form_edit.html', {"form": form, "list_id": list_id})
-
-        return render(request, 'todolist/wrong_method.html')
-
-    else:
-        return render(request, 'todolist/access_denied.html')
 
 
 def task_detail(request, task_id):
