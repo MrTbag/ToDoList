@@ -21,6 +21,10 @@ class TaskViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
+    def perform_update(self, serializer):
+        print(serializer.validated_data)
+        serializer.save()
+
     @action(detail=True, methods=['get'])
     def export(self, request, pk=None):
         task: Task = self.get_object()

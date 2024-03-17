@@ -17,7 +17,8 @@ $(document).ready(function (){
                     $("#lists").append("<li><a href=\"" + list.id + "\">" + list.name + "</a></li>");
                 })
                 $("#btn").remove();
-            }
+            },
+            cache: false,
         });
     });
 
@@ -41,7 +42,8 @@ $(document).ready(function (){
                 setTimeout(()=>{
                     window.location.replace('http://127.0.0.1:8000/todolists/')
                 })
-            }
+            },
+            cache: false,
         });
     });
 

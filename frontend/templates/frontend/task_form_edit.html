@@ -1,5 +1,39 @@
-<form enctype="multipart/form-data" action="{% url 'todolist:task_edit' task_id %}" method="post">
-{% csrf_token %}
-{{ form }}
-<input type="submit" value="Submit">
-</form>
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+    
+    <form id="data" method="post" enctype="multipart/form-data">
+        {{ form }}
+        <input type="submit" value="Save" id="save">
+    </form>
+    
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        
+        $("form#data").submit(function(e) {
+            e.preventDefault();    
+            let formData = new FormData(this);
+        
+            $.ajax({
+                url: `http://127.0.0.1:8000/api/todolist/v3/tasks/{{ task_id }}/`,
+                type: 'PUT',
+                data: formData,
+                headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                },
+                success: function () {
+                    setTimeout(() => {
+                            window.location.replace('http://127.0.0.1:8000/todolists/');
+                        }, 1000);
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        });
+    </script>
+{% endblock %}

@@ -18,7 +18,8 @@ $(document).ready(function (){
                         "        <li><p>Date Published: " + todolist.data("pubdate") + "</p></li>\n" +
                         "    </ul>");
                 $("#detail-btn").remove();
-            }
+            },
+            cache: false,
         })
     });
 
@@ -34,7 +35,8 @@ $(document).ready(function (){
                 setTimeout(function (){
                     window.location.replace("http://127.0.0.1:8000/todolists/");
                 }, 1000)
-            }
+            },
+            cache: false,
         })
     });
 
@@ -56,7 +58,8 @@ $(document).ready(function (){
                 setTimeout(() => {
                     window.location.replace('http://127.0.0.1:8000/todolists/');
                 }, 1000);
-            }
+            },
+            cache: false,
         });
     });
 });
