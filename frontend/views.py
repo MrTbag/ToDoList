@@ -8,7 +8,7 @@ from django.views.generic import View
 
 from url_shortener.models import UrlDict
 
-from todolist.models import CustomUser, TodoList
+from todolist.models import CustomUser, TodoList, Task
 from frontend.forms import TodolistForm
 
 
@@ -60,13 +60,12 @@ def list_edit(request, list_id):
     return render(request, 'frontend/wrong_method.html')
 
 
-
 def task_detail(request, task_id):
     if request.method == 'GET':
         task = get_object_or_404(Task, pk=task_id)
-        return render(request, 'todolist/task_detail.html', {'task': task})
+        return render(request, 'frontend/task_detail.html', {'task': task})
 
-    return render(request, 'todolist/wrong_method.html')
+    return render(request, 'frontend/wrong_method.html')
 
 
 def task_delete(request, task_id):

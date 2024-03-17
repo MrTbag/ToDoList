@@ -1,28 +1,73 @@
-<h1>{{ task }}</h1>
- <ul>   
-     {%  if task.done %}
-         <li><p>This task is already done</p></li>
-     {% else %}    
-         <li><p>This task is yet to be done</p></li>
-     {% endif %}
-     <li><p>Added at: {{ task.date_added}}</p></li>
-     <li><p>Deadline is at: {{ task.deadline}}</p></li>
-     <li><p>Importance: {{ task.importance}}</p></li>
-     {% if task.file %}
-        <li> <a href="{{ task.file.url }}"> {{ task.file }}</a> </li>
-     {% endif %}
-     {% if task.image %}
-        <li> <img alt="" src={{ task.image.url }}> </li>
-     {% endif %}
-     <li>
-         <form action="{% url 'todolist:task_delete' task.id %}" method="post">
-         {% csrf_token %}
-         <input type="submit" value="Delete">
-         </form>
-     </li>
-     <li><a href="{% url 'todolist:task_edit' task.id %}"> Edit the Task!</a></li>
-     <li><a href="{% url 'todolist:task_export' task.id %}"> Share the Task!</a></li>
- </ul>
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+    <h1>{{ task }}</h1>
+     <ul>   
+         {%  if task.done %}
+             <li><p>This task is already done</p></li>
+         {% else %}    
+             <li><p>This task is yet to be done</p></li>
+         {% endif %}
+         <button id="detail-btn">Show more details</button>
+         <div id="details">
+             
+         </div>
+     </ul>
+    
+    <button id="delete-btn">Delete</button>
+    <p id="delete-response"></p>
+{#    <a href="{% url 'todolist:task_edit' task.id %}"> Edit the Task!</a>#}
+{#    <a href="{% url 'todolist:task_export' task.id %}"> Share the Task!</a>#}
+    
+    <a href="{% url 'frontend:index' %}"> Return to the dashboard</a>
+    
+    <div id="task" data-id="{{ task.id }}" data-date-added="{{ task.date_added }}" data-deadline="{{ task.deadline }}" 
+         data-importance="{{ task.importance }}" data-file="{{ task.file }}" data-image="{{ task.image }}"></div>
+    
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    
+        $(document).ready( function () {
+            $("#detail-btn").click( function (){
+                $.ajax({
+                    method: "GET",
+                    url: `http://127.0.0.1:8000/api/todolist/v3/tasks/{{ task.id }}/`,
+                    success: function () {
+                        $("#details").append("<li><p>Added at: {{ task.date_added}}</p></li>\n" +
+                            "             <li><p>Deadline is at: {{ task.deadline}}</p></li>\n" +
+                            "             <li><p>Importance: {{ task.importance}}</p></li>\n" +
+                            "             {% if task.file %}\n" +
+                            "                <li> <a href=\"{{ task.file.url }}\"> {{ task.file }}</a> </li>\n" +
+                            "             {% endif %}\n" +
+                            "             {% if task.image %}\n" +
+                            "                <li> <img alt=\"\" src={{ task.image.url }}> </li>\n" +
+                            "             {% endif %}");
+                        $("#detail-btn").remove();
+                    }
+                });
+            });
+            
+            $("#delete-btn").click( function (){
+                $.ajax({
+                    method: "DELETE",
+                    url: `http://127.0.0.1:8000/api/todolist/v3/tasks/{{ task.id }}/`,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    success: function(response){
+                        $("#delete-response").text("Deleted successfully")
+                        setTimeout(function (){
+                            window.location.replace("http://127.0.0.1:8000/todolists/");
+                        }, 1000)
+                    }
+                })
+            })
+        });
+    </script>
+        
 
-<a href="{% url 'todolist:index' %}"> Return to the dashboard</a>
-
+{% endblock %}

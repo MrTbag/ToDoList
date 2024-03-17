@@ -27,8 +27,8 @@ $(document).ready(function (){
             url: api_url,
             type: 'DELETE',
             headers: {
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
+                'X-CSRFToken': getCookie('csrftoken')
+            },
             success: function(response){
                 $("#delete-response").text("Deleted successfully")
                 setTimeout(function (){
