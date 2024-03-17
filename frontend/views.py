@@ -89,10 +89,10 @@ def task_edit(request, task_id):
 def task_export(request, task_id=None):
     if request.method == 'GET':
         task = get_object_or_404(Task, id=task_id)
-        return render(request, 'todolist/task_export.html', {'url': request.build_absolute_uri(),
+        return render(request, 'frontend/task_export.html', {'url': request.build_absolute_uri(),
                                                              'task': task})
 
-    return render(request, 'todolist/wrong_method.html')
+    return render(request, 'frontend/wrong_method.html')
 
 
 def task_import(request, list_id):

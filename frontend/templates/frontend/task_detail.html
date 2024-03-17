@@ -16,9 +16,9 @@
     
     <button id="delete-btn">Delete</button>
     <p id="delete-response"></p>
-    <a href="{% url 'frontend:task_edit' task.id %}"> Edit the task</a><br>
-{#    <a href="{% url 'todolist:task_export' task.id %}"> Share the Task!</a>#}
     
+    <a href="{% url 'frontend:task_edit' task.id %}"> Edit the task</a><br>
+    <a href="{% url 'frontend:task_export' task.id %}"> Share the Task!</a><br>
     <a href="{% url 'frontend:index' %}"> Return to the dashboard</a>
     
     <div id="task" data-id="{{ task.id }}" data-date-added="{{ task.date_added }}" data-deadline="{{ task.deadline }}" 
