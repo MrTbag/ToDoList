@@ -4,8 +4,8 @@ from django.views.generic import View
 from todolist.models import CustomUser
 
 
-class IndexView(View):
-    def get(self, request):
+def todolist_list(request):
+    if request.method == 'GET':
         user: CustomUser = request.user
         lists = user.todolist_set.all()
         context = {
@@ -13,3 +13,5 @@ class IndexView(View):
             'user': request.user.username
         }
         return render(request, 'frontend/todolist_list.html', context)
+
+    return render(request, 'frontend/wrong_method.html')

@@ -33,7 +33,7 @@ $(document).ready(function (){
             success: function(response){
                 $("#delete-response").text("Deleted successfully")
                 setTimeout(function (){
-                    window.location.replace("http://127.0.0.1:8000/todolists/");
+                    window.location.replace("http://127.0.0.1:8000/tickapp/todolists/");
                 }, 1000)
             },
             cache: false,
@@ -56,7 +56,7 @@ $(document).ready(function (){
             }),
             success: function(response){
                 setTimeout(() => {
-                    window.location.replace('http://127.0.0.1:8000/todolists/');
+                    window.location.replace('http://127.0.0.1:8000/tickapp/todolists/');
                 }, 1000);
             },
             cache: false,

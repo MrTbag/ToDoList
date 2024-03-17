@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from todolist.models import CustomUser, TodoList
 
 
-def list_detail(request, list_id):
+def todolist_detail(request, list_id):
     if request.method == 'GET':
         current_list = get_object_or_404(TodoList, id=list_id)
         user: CustomUser = request.user

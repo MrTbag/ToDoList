@@ -40,7 +40,7 @@ $(document).ready(function (){
             data: JSON.stringify(data),
             success: function(response){
                 setTimeout(()=>{
-                    window.location.replace('http://127.0.0.1:8000/todolists/')
+                    window.location.replace('http://127.0.0.1:8000/tickapp/todolists/')
                 })
             },
             cache: false,
