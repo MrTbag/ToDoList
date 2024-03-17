@@ -9,7 +9,7 @@ urlpatterns = [
     path('api/todolist/v2/', include('todolist.v2.urls', namespace='todolist-v2')),
     path('api/todolist/v3/', include('todolist.v3.urls', namespace='todolist-v3')),
     path('api/shorturl/', include('url_shortener.urls', namespace='url_shortener')),
-    path('', include('frontend.urls', namespace='frontend')),
+    path('tickapp/', include('frontend.urls', namespace='frontend')),
     path('admin/', admin.site.urls),
 ]
 
