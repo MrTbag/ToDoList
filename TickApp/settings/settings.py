@@ -39,6 +39,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'TickApp.middleware.authenticate',
+    'TickApp.middleware.home',
 ]
 
 ROOT_URLCONF = 'TickApp.urls'
