@@ -1,5 +1,37 @@
-<form action="{% url 'todolist:task_import' list_id %}" method="post">
-{% csrf_token %}
-{{ form }}
-<input type="submit" value="Submit">
-</form>
+{% extends 'base.html' %}
+{% block main %}
+
+    <form method="post" id="data">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+    
+    <p id="response"></p>
+    
+    <script>
+        $("form#data").submit( function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            console.log(formData)
+            $.ajax({
+                method: "POST",
+                url: "http://127.0.0.1:8000/api/todolist/v3/todo-lists/{{ list_id }}/import_task/",
+                data: formData,
+                success: function (response){
+                    $("#response").text(response);
+                    setTimeout(function (){
+                        window.location.replace("http://127.0.0.1:8000/todolists/{{ list_id }}/");
+                    }, 1000)
+                },
+                error: function (response){
+                    alert(response);
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -64,6 +64,6 @@ class TodolistViewSet(ModelViewSet):
                 return Response("Task '" + task.name + "' was imported to list '" + current_list.name + "'",
                                 status=status.HTTP_201_CREATED)
             else:
-                return Response("You already have this task in this list", status=status.HTTP_400_BAD_REQUEST)
+                return Response("You already have this task in this list", status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

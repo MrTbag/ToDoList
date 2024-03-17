@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block main %}
-    <form method="post", id="data">
+    <form method="post" id="data">
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Shorten URL">
@@ -10,12 +10,6 @@
     
     
     <script>
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-        
         $("form#data").submit(function(e) {
             e.preventDefault();    
             let formData = new FormData(this);

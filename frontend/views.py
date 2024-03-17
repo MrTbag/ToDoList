@@ -101,26 +101,7 @@ def url_shortener(request):
 
 
 def task_import(request, list_id):
-    if request.method == 'POST':
-        form = TaskImportForm(request.POST)
-
-        if form.is_valid():
-            url = form.cleaned_data['task_link']
-            if UrlDict.objects.filter(key=url).exists():
-                original_url = str(UrlDict.objects.get(key=url).original_url)
-                matching_url_regex = ('^http://' + request.get_host() + '/' + request.resolver_match.app_name +
-                                      '/tasks/' + '(?P<task_id>\\d+)/export/$')
-                print(request.resolver_match.app_name)
-                p = re.compile(matching_url_regex)
-                if p.match(original_url):
-                    task_id = int(p.search(original_url).group('task_id'))
-                    task = get_object_or_404(Task, pk=task_id)
-                    get_object_or_404(TodoList, id=list_id).tasks.add(task)
-                    return redirect('todolist:list_detail', list_id=list_id)
-
-            return HttpResponse("Invalid URL")
-
-    elif request.method == 'GET':
+    if request.method == 'GET':
         form = TaskImportForm()
         return render(request, 'frontend/task_import.html', {'list_id': list_id, 'form': form})
 
