@@ -4,12 +4,14 @@ from frontend import views
 app_name = 'frontend'
 
 urlpatterns = [
+    path('', views.index, name='index'),
     path('todolists/', views.todolist_list, name='todolist_list'),
     path('todolists/create/', views.todolist_create, name='todolist_create'),
     path('todolists/created-successfully/', views.created_successfully, name='successful'),
     path('todolists/<int:list_id>/', views.todolist_detail, name='todolist_detail'),
     path('todolists/<int:list_id>/edit', views.todolist_edit, name='todolist_edit'),
     path('todolists/<int:list_id>/import', views.task_import, name='task_import'),
+    path('tasks/', views.task_list, name='task_list'),
     path('tasks/create/', views.task_create, name='task_create'),
     path('tasks/<int:task_id>/', views.task_detail, name='task_detail'),
     path('tasks/<int:task_id>/edit', views.task_edit, name='task_edit'),

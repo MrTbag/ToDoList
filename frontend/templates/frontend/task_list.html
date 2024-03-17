@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block main %}
+    <h2>{{ user }}'s tasks</h2>
+    <ul id="tasks">
+    
+    </ul>
+
+    <button id="btn" >Get tasks</button><br>
+    
+    <a href="{% url 'frontend:task_create' %}">Create a new list</a><br>
+
+    <script>
+        $("#btn").click( function (){
+            $.ajax({
+                method: "GET",
+                url: "http://127.0.0.1:8000/api/todolist/v3/tasks/",
+                success: function (response){
+                    $.each(response.results, function (i, task){
+                        $("#tasks").append("<li><a href=\"" + task.id + "\">" + task.name + "</a></li>");
+                    });
+                },
+                cache: false,
+            })
+            $("#btn").remove();
+        });
+    </script>
+{% endblock %}

@@ -11,7 +11,6 @@ $(document).ready(function (){
             type: 'GET',
             url: api_url,
             success: function(response){
-                console.log('success', response.results)
                 $.each(response.results, function (i, list){
 
                     $("#lists").append("<li><a href=\"" + list.id + "\">" + list.name + "</a></li>");

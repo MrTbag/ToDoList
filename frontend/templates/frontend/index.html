@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block main %}
+    <h2>Welcome to TickApp</h2>
+    <a href="{% url 'frontend:todolist_list' %}">Go to your todo lists</a><br>
+    <a href="{% url 'frontend:task_list' %}">Go to your tasks</a>
+{% endblock %}
