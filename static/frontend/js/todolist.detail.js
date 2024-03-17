@@ -11,7 +11,7 @@ $(document).ready(function (){
         $.ajax({
             url: api_url,
             type: 'get',
-            success: function(response){
+            success: function(){
                 $("#details").append("<h3>Details: </h3>\n" +
                         "    <ul>\n" +
                         "        <li><p>Description: " + todolist.data("description") + "</p></li>\n" +
@@ -30,7 +30,7 @@ $(document).ready(function (){
             headers: {
                 'X-CSRFToken': getCookie('csrftoken')
             },
-            success: function(response){
+            success: function(){
                 $("#delete-response").text("Deleted successfully")
                 setTimeout(function (){
                     window.location.replace("http://127.0.0.1:8000/tickapp/todolists/");
@@ -54,7 +54,7 @@ $(document).ready(function (){
                 "description": $("#id_description").val(),
                 "tasks": $("#id_tasks").val(),
             }),
-            success: function(response){
+            success: function(){
                 setTimeout(() => {
                     window.location.replace('http://127.0.0.1:8000/tickapp/todolists/');
                 }, 1000);

@@ -11,7 +11,7 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def check_object_permissions(self, request, obj):
-        for permission in self.get_permissions():
+        for _ in self.get_permissions():
             if not request.user == obj.creator:
                 self.permission_denied(
                     request,

@@ -37,7 +37,7 @@ $(document).ready(function (){
                     'X-CSRFToken': getCookie('csrftoken'),
             },
             data: JSON.stringify(data),
-            success: function(response){
+            success: function(){
                 setTimeout(()=>{
                     window.location.replace('http://127.0.0.1:8000/tickapp/todolists/')
                 })
