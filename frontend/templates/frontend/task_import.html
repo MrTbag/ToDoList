@@ -21,7 +21,7 @@
                 success: function (response){
                     $("#response").text(response);
                     setTimeout(function (){
-                        window.location.replace("http://127.0.0.1:8000/tickapp/todolists/{{ list_id }}/");
+                        window.location.replace("http://127.0.0.1:8000/tickapp/{{ list_id }}/");
                     }, 1000)
                 },
                 error: function (response){

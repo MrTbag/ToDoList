@@ -38,6 +38,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+
     'TickApp.middleware.authenticate',
     'TickApp.middleware.home',
 ]
